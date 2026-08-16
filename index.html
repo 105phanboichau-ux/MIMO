@@ -1,1375 +1,353 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nông Nghiệp Việt - Web Dashboard & App Simulator</title>
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- React & ReactDOM -->
-  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-  <!-- Babel Compiler -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Lexend', sans-serif;
-      background-color: #f8fafc;
-    }
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 9999px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: transparent;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nông Nghiệp Việt - Admin Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#081c24',
+                            sidebar: '#0d2834',
+                            green: '#00b894',
+                            blue: '#0284c7',
+                            lightBg: '#f1f5f9'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="text-slate-800 antialiased">
+<body class="bg-brand-lightBg font-sans text-slate-700 flex h-screen overflow-hidden">
 
-  <div id="root"></div>
-
-  <script type="text/babel">
-    const { useState, useEffect, useMemo } = React;
-
-    // Dummy initial state mimicking Supabase database
-    const initialUsers = [
-      { id: 'usr_1', name: 'Anh Sáu (Nông Dân)', phone: '0901234567', role: 'farmer', status: 'Active' },
-      { id: 'usr_2', name: 'Chú Ba (Nông Dân)', phone: '0908765432', role: 'farmer', status: 'Active' },
-      { id: 'usr_3', name: 'KTV Minh (Kỹ Thuật)', phone: '0912345678', role: 'technician', status: 'Active' },
-      { id: 'usr_4', name: 'KTV Hoàng (Kỹ Thuật)', phone: '0919998888', role: 'technician', status: 'Active' },
-    ];
-
-    const initialGardens = [
-      { 
-        id: 'gdn_101', 
-        name: 'Vườn Sầu Riêng - Lô A1', 
-        farmerId: 'usr_1', 
-        farmerName: 'Anh Sáu (Nông Dân)',
-        technicianId: 'usr_3', 
-        technicianName: 'KTV Minh (Kỹ Thuật)',
-        isLocked: true, 
-        area: '1.5 Hécta', 
-        trees: '120 Cây Thái' 
-      },
-      { 
-        id: 'gdn_102', 
-        name: 'Vườn Cà Phê - Đồi 2', 
-        farmerId: 'usr_1', 
-        farmerName: 'Anh Sáu (Nông Dân)',
-        technicianId: null, 
-        technicianName: 'Chưa gán',
-        isLocked: false, 
-        area: '2.0 Hécta', 
-        trees: '2000 Gốc Robusta' 
-      },
-      { 
-        id: 'gdn_103', 
-        name: 'Vườn Mắc Ca - Trang Trại B', 
-        farmerId: 'usr_2', 
-        farmerName: 'Chú Ba (Nông Dân)',
-        technicianId: 'usr_4', 
-        technicianName: 'KTV Hoàng (Kỹ Thuật)',
-        isLocked: true, 
-        area: '3.0 Hécta', 
-        trees: '450 Cây' 
-      }
-    ];
-
-    const initialDiaries = [
-      {
-        id: 'dry_1',
-        gardenId: 'gdn_101',
-        authorId: 'usr_1',
-        authorName: 'Anh Sáu',
-        authorRole: 'farmer',
-        title: 'Tưới nước đợt 2 & Dọn cỏ xung quanh gốc sầu riêng',
-        content: 'Tưới béc phun tự động 2 tiếng. Cỏ dại quanh gốc đã được cắt phát gọn gàng.',
-        date: '15/08/2026',
-        time: '08:30',
-        type: 'normal', // 'normal' | 'proposal'
-        proposalStatus: null
-      },
-      {
-        id: 'dry_2',
-        gardenId: 'gdn_101',
-        authorId: 'usr_3',
-        authorName: 'KTV Minh',
-        authorRole: 'technician',
-        title: 'Thăm vườn định kỳ: Kiểm tra rầy nhảy và xì mủ thân',
-        content: 'Phát hiện vết rầy nhẹ trên đọt non sầu riêng. Đã xử lý rửa lá đợt 1.',
-        date: '16/08/2026',
-        time: '09:15',
-        type: 'normal',
-        proposalStatus: null
-      },
-      {
-        id: 'dry_3',
-        gardenId: 'gdn_101',
-        authorId: 'usr_3',
-        authorName: 'KTV Minh',
-        authorRole: 'technician',
-        title: 'Đề xuất đơn phân bón & Thuốc trừ rầy nấm',
-        content: 'Cần bổ sung 2 Phuy Nấm Lá + 50KG Phân Hữu Cơ Nở để bảo vệ cơi đọt.',
-        date: '16/08/2026',
-        time: '10:00',
-        type: 'proposal',
-        proposalStatus: 'pending' // 'pending' | 'purchased' | 'deleted'
-      }
-    ];
-
-    const initialAuditLogs = [
-      { id: 'log_1', user: 'Admin System', role: 'admin', action: 'Khởi tạo hệ thống', detail: 'Tạo cơ sở dữ liệu Supabase & thiết lập RLS', timestamp: '16/08/2026 07:00' },
-      { id: 'log_2', user: 'Anh Sáu', role: 'farmer', action: 'Đăng nhập App', detail: 'Thiết bị Mobile iPhone 15 Pro', timestamp: '16/08/2026 08:15' },
-      { id: 'log_3', user: 'Admin Dashboard', role: 'admin', action: 'Gán Kỹ thuật viên', detail: 'Gán KTV Minh vào Vườn Sầu Riêng - Lô A1 (Tự động KHÓA dữ liệu)', timestamp: '16/08/2026 08:30' }
-    ];
-
-    function MainApp() {
-      // Global Shared State (Simulating Supabase Realtime DB)
-      const [users, setUsers] = useState(initialUsers);
-      const [gardens, setGardens] = useState(initialGardens);
-      const [diaries, setDiaries] = useState(initialDiaries);
-      const [auditLogs, setAuditLogs] = useState(initialAuditLogs);
-
-      // Active Navigation Tab
-      const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'app_simulator' | 'supabase_sql'
-
-      // Mobile App Simulator Active Role
-      const [appRole, setAppRole] = useState('farmer'); // 'farmer' | 'technician'
-      const [activeUserId, setActiveUserId] = useState('usr_1'); // 'usr_1' (Anh Sáu) or 'usr_3' (KTV Minh)
-
-      // Add audit log helper
-      const addAuditLog = (user, role, action, detail) => {
-        const newLog = {
-          id: 'log_' + Date.now(),
-          user,
-          role,
-          action,
-          detail,
-          timestamp: new Date().toLocaleString('vi-VN')
-        };
-        setAuditLogs(prev => [newLog, ...prev]);
-      };
-
-      // Handle App User Switch
-      const handleUserSwitch = (userId) => {
-        setActiveUserId(userId);
-        const selectedUser = users.find(u => u.id === userId);
-        if (selectedUser) {
-          setAppRole(selectedUser.role);
-          addAuditLog(selectedUser.name, selectedUser.role, 'Đăng nhập App', `Chuyển sang tài khoản ${selectedUser.name}`);
-        }
-      };
-
-      return (
-        <div className="min-h-screen flex flex-col bg-slate-100">
-          
-          {/* HEADER / TOP NAVBAR */}
-          <header className="bg-slate-900 text-white shadow-md sticky top-0 z-50">
-            <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center space-x-3">
-                <div className="bg-emerald-500 p-2 rounded-xl text-slate-950 font-black text-xl tracking-tight flex items-center gap-2">
-                  <span>🌱</span> NÔNG NGHIỆP VIỆT
+    <!-- SIDEBAR DỌC BÊN TRÁI -->
+    <aside class="w-64 bg-brand-sidebar text-white flex flex-col justify-between shrink-0 shadow-lg">
+        <div>
+            <!-- Logo Header -->
+            <div class="p-4 bg-brand-dark flex items-center space-x-3 border-b border-slate-700">
+                <div class="p-2 bg-emerald-500 rounded-lg text-white">
+                    <i class="fa-solid fa-seedling text-xl"></i>
                 </div>
-                <div className="hidden md:block border-l border-slate-700 h-6"></div>
-                <span className="hidden md:inline-block text-xs font-semibold bg-emerald-950 text-emerald-400 border border-emerald-800 px-2.5 py-1 rounded-full">
-                  ⚡ Supabase Realtime Active
-                </span>
-              </div>
-
-              {/* NAV MODES */}
-              <div className="flex items-center bg-slate-800 p-1 rounded-xl border border-slate-700">
-                <button
-                  onClick={() => setActiveTab('dashboard')}
-                  className={`px-3.5 py-1.5 rounded-lg font-bold text-xs sm:text-sm transition-all ${
-                    activeTab === 'dashboard'
-                      ? 'bg-emerald-500 text-slate-950 shadow-sm'
-                      : 'text-slate-300 hover:text-white'
-                  }`}
-                >
-                  💻 Web Dashboard (Quản Trị)
-                </button>
-                <button
-                  onClick={() => setActiveTab('app_simulator')}
-                  className={`px-3.5 py-1.5 rounded-lg font-bold text-xs sm:text-sm transition-all ${
-                    activeTab === 'app_simulator'
-                      ? 'bg-emerald-500 text-slate-950 shadow-sm'
-                      : 'text-slate-300 hover:text-white'
-                  }`}
-                >
-                  📱 Giả Lập App Mobile
-                </button>
-                <button
-                  onClick={() => setActiveTab('supabase_sql')}
-                  className={`px-3.5 py-1.5 rounded-lg font-bold text-xs sm:text-sm transition-all ${
-                    activeTab === 'supabase_sql'
-                      ? 'bg-emerald-500 text-slate-950 shadow-sm'
-                      : 'text-slate-300 hover:text-white'
-                  }`}
-                >
-                  🗄️ Supabase SQL Setup
-                </button>
-              </div>
+                <span class="font-bold text-lg tracking-wide text-emerald-400">NÔNG NGHIỆP VIỆT</span>
             </div>
-          </header>
 
-          {/* MAIN BODY CONTENT */}
-          <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 space-y-6">
-
-            {activeTab === 'dashboard' && (
-              <DashboardView
-                users={users}
-                setUsers={setUsers}
-                gardens={gardens}
-                setGardens={setGardens}
-                diaries={diaries}
-                setDiaries={setDiaries}
-                auditLogs={auditLogs}
-                addAuditLog={addAuditLog}
-              />
-            )}
-
-            {activeTab === 'app_simulator' && (
-              <AppSimulatorView
-                users={users}
-                gardens={gardens}
-                setGardens={setGardens}
-                diaries={diaries}
-                setDiaries={setDiaries}
-                activeUserId={activeUserId}
-                appRole={appRole}
-                handleUserSwitch={handleUserSwitch}
-                addAuditLog={addAuditLog}
-              />
-            )}
-
-            {activeTab === 'supabase_sql' && <SupabaseSqlView />}
-
-          </main>
-
-          {/* FOOTER */}
-          <footer className="bg-slate-900 text-slate-400 text-xs py-4 text-center border-t border-slate-800">
-            Hệ Thống Quản Lý Nông Nghiệp Realtime • Kết Nối Supabase Cloud Database & App Mobile
-          </footer>
+            <!-- Navigation Links -->
+            <nav class="p-3 space-y-1 text-sm font-medium">
+                <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg bg-emerald-600 text-white shadow">
+                    <i class="fa-solid fa-[#00b894] fa-chart-pie w-5"></i>
+                    <span>Tổng Quan (Dashboard)</span>
+                </a>
+                <a href="#quan-ly-vuon" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                    <i class="fa-solid fa-tree w-5 text-emerald-400"></i>
+                    <span>Quản Lý Vườn</span>
+                </a>
+                <a href="#quan-ly-user" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                    <i class="fa-solid fa-users-gear w-5 text-sky-400"></i>
+                    <span>Tài Khoản & Phân Quyền</span>
+                </a>
+                <a href="#nhat-ky" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                    <i class="fa-solid fa-book-open w-5 text-amber-400"></i>
+                    <span>Stream Nhật Ký</span>
+                </a>
+                <a href="#audit-log" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                    <i class="fa-solid fa-shield-halved w-5 text-rose-400"></i>
+                    <span>Lịch Sử Audit Logs</span>
+                </a>
+            </nav>
         </div>
-      );
-    }
 
-    // ==========================================
-    // 1. WEB DASHBOARD VIEW (ADMIN)
-    // ==========================================
-    function DashboardView({ users, setUsers, gardens, setGardens, diaries, setDiaries, auditLogs, addAuditLog }) {
-      const [newUserModal, setNewUserModal] = useState(false);
-      const [userName, setUserName] = useState('');
-      const [userPhone, setUserPhone] = useState('');
-      const [userRole, setUserRole] = useState('farmer');
-
-      const [resetPassModal, setResetPassModal] = useState(null);
-      const [newPassword, setNewPassword] = useState('');
-
-      // Create new user
-      const handleCreateUser = (e) => {
-        e.preventDefault();
-        if (!userName.trim() || !userPhone.trim()) return;
-
-        const newUser = {
-          id: 'usr_' + Date.now(),
-          name: userName + (userRole === 'farmer' ? ' (Nông Dân)' : ' (Kỹ Thuật)'),
-          phone: userPhone,
-          role: userRole,
-          status: 'Active'
-        };
-
-        setUsers([...users, newUser]);
-        addAuditLog('Admin Dashboard', 'admin', 'Tạo User Mới', `Tạo tài khoản ${newUser.name} - SĐT: ${newUser.phone}`);
-        setUserName('');
-        setUserPhone('');
-        setNewUserModal(false);
-      };
-
-      // Reset Password Handler
-      const handleResetPassword = () => {
-        if (!newPassword) return;
-        addAuditLog('Admin Dashboard', 'admin', 'Đổi / Reset Mật Khẩu', `Đặt lại mật khẩu cho user ${resetPassModal.name}`);
-        alert(`Đã đổi mật khẩu thành công cho ${resetPassModal.name}`);
-        setResetPassModal(null);
-        setNewPassword('');
-      };
-
-      // Assign Technician to Garden
-      const handleAssignTechnician = (gardenId, techId) => {
-        const tech = users.find(u => u.id === techId);
-        setGardens(prev => prev.map(g => {
-          if (g.id === gardenId) {
-            const isNowLocked = !!techId; // Bắt buộc gán KTV là TỰ ĐỘNG KHÓA
-            addAuditLog(
-              'Admin Dashboard', 
-              'admin', 
-              'Gán Kỹ Thuật Viên & Khóa Vườn', 
-              `Gán ${tech ? tech.name : 'Không gán'} vào vườn "${g.name}". Tình trạng khóa: ${isNowLocked ? 'ĐÃ KHÓA' : 'MỞ KHÓA'}`
-            );
-            return {
-              ...g,
-              technicianId: techId || null,
-              technicianName: tech ? tech.name : 'Chưa gán',
-              isLocked: isNowLocked
-            };
-          }
-          return g;
-        }));
-      };
-
-      // Toggle Lock Status manually from Web
-      const handleToggleLock = (gardenId) => {
-        setGardens(prev => prev.map(g => {
-          if (g.id === gardenId) {
-            const newLockState = !g.isLocked;
-            addAuditLog('Admin Dashboard', 'admin', 'Thay đổi Khóa Dữ Liệu', `${newLockState ? 'ĐÃ KHÓA' : 'MỞ KHÓA'} vườn "${g.name}"`);
-            return { ...g, isLocked: newLockState };
-          }
-          return g;
-        }));
-      };
-
-      return (
-        <div className="space-y-6">
-          
-          {/* TOP METRICS STATS */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-              <div>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Tổng User</p>
-                <p className="text-2xl font-extrabold text-slate-900 mt-1">{users.length}</p>
-                <p className="text-[11px] text-slate-500 mt-1">{users.filter(u=>u.role==='farmer').length} Nông dân • {users.filter(u=>u.role==='technician').length} KTV</p>
-              </div>
-              <div className="w-11 h-11 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center font-bold text-lg">
-                👥
-              </div>
+        <!-- System Status & Quick Links -->
+        <div class="p-4 border-t border-slate-700 space-y-2 text-xs">
+            <div class="flex items-center space-x-2 text-emerald-400 bg-emerald-950/60 p-2 rounded border border-emerald-800">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Supabase Realtime Active</span>
             </div>
-
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-              <div>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Tổng Vườn</p>
-                <p className="text-2xl font-extrabold text-emerald-600 mt-1">{gardens.length}</p>
-                <p className="text-[11px] text-slate-500 mt-1">{gardens.filter(g=>g.isLocked).length} Vườn đang gán KTV</p>
-              </div>
-              <div className="w-11 h-11 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center font-bold text-lg">
-                🏡
-              </div>
-            </div>
-
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-              <div>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Nhật Ký & Đơn</p>
-                <p className="text-2xl font-extrabold text-purple-600 mt-1">{diaries.length}</p>
-                <p className="text-[11px] text-slate-500 mt-1">{diaries.filter(d=>d.type==='proposal').length} Đề xuất đơn</p>
-              </div>
-              <div className="w-11 h-11 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center font-bold text-lg">
-                📝
-              </div>
-            </div>
-
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-              <div>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Audit Logs</p>
-                <p className="text-2xl font-extrabold text-amber-600 mt-1">{auditLogs.length}</p>
-                <p className="text-[11px] text-slate-500 mt-1">Lịch sử thao tác ghi lại</p>
-              </div>
-              <div className="w-11 h-11 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center font-bold text-lg">
-                🛡️
-              </div>
-            </div>
-          </div>
-
-          {/* TABLE 1: GÁN VƯỜN VÀ KHÓA DỮ LIỆU */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="p-4 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <h2 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-                  <span>🔒</span> QUẢN LÝ VƯỜN, GÁN KỸ THUẬT VIÊN & KHÓA DỮ LIỆU
-                </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Khi vườn được gán Kỹ Thuật Viên, toàn bộ dữ liệu trên App Nông Dân & KTV sẽ tự động bị KHÓA (không thể sửa/xóa).
-                </p>
-              </div>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs sm:text-sm">
-                <thead className="bg-slate-100 text-slate-600 font-bold uppercase text-[11px]">
-                  <tr>
-                    <th className="p-3.5">Tên Vườn</th>
-                    <th className="p-3.5">Nông Dân (Sở hữu)</th>
-                    <th className="p-3.5">Kỹ Thuật Viên Phụ Trách</th>
-                    <th className="p-3.5 text-center">Trạng Thái Khóa</th>
-                    <th className="p-3.5 text-right">Thao Tác</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200 font-medium">
-                  {gardens.map((g) => (
-                    <tr key={g.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="p-3.5">
-                        <p className="font-extrabold text-slate-900">{g.name}</p>
-                        <p className="text-xs text-slate-500">{g.area} • {g.trees}</p>
-                      </td>
-                      <td className="p-3.5 text-slate-700 font-bold">
-                        {g.farmerName}
-                      </td>
-                      <td className="p-3.5">
-                        <select
-                          value={g.technicianId || ''}
-                          onChange={(e) => handleAssignTechnician(g.id, e.target.value)}
-                          className="bg-slate-50 border border-slate-300 text-slate-900 font-bold text-xs rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-emerald-500"
-                        >
-                          <option value="">-- Chưa gán KTV --</option>
-                          {users.filter(u => u.role === 'technician').map(t => (
-                            <option key={t.id} value={t.id}>{t.name}</option>
-                          ))}
-                        </select>
-                      </td>
-                      <td className="p-3.5 text-center">
-                        {g.isLocked ? (
-                          <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-800 font-extrabold text-[11px] px-2.5 py-1 rounded-full border border-amber-300">
-                            🔒 ĐÃ KHÓA (Đầu tư)
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 font-bold text-[11px] px-2.5 py-1 rounded-full border border-emerald-300">
-                            🔓 Mở khóa
-                          </span>
-                        )}
-                      </td>
-                      <td className="p-3.5 text-right">
-                        <button
-                          onClick={() => handleToggleLock(g.id)}
-                          className={`px-3 py-1.5 rounded-xl font-bold text-xs transition-all ${
-                            g.isLocked 
-                              ? 'bg-slate-200 hover:bg-slate-300 text-slate-800' 
-                              : 'bg-amber-500 hover:bg-amber-600 text-white shadow-xs'
-                          }`}
-                        >
-                          {g.isLocked ? 'Bật Mở Khóa' : 'Khóa Dữ Liệu'}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* TABLE 2: QUẢN LÝ TÀI KHOẢN & PHÂN QUYỀN */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="p-4 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <h2 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-                  <span>👥</span> QUẢN LÝ TÀI KHOẢN & PHÂN QUYỀN USER
-                </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Tạo tài khoản mới, cập nhật phân quyền (Nông dân / KTV) và Reset mật khẩu.
-                </p>
-              </div>
-              <button
-                onClick={() => setNewUserModal(true)}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl font-extrabold text-xs flex items-center gap-1.5 shadow-sm active:scale-95 transition-all"
-              >
-                <span>➕</span> Tạo User Mới
-              </button>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs sm:text-sm">
-                <thead className="bg-slate-100 text-slate-600 font-bold uppercase text-[11px]">
-                  <tr>
-                    <th className="p-3.5">Họ & Tên User</th>
-                    <th className="p-3.5">Số Điện Thoại</th>
-                    <th className="p-3.5">Vai Trò (Role)</th>
-                    <th className="p-3.5">Trạng Thái</th>
-                    <th className="p-3.5 text-right">Thao Tác</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200 font-medium">
-                  {users.map((u) => (
-                    <tr key={u.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="p-3.5 font-bold text-slate-900">{u.name}</td>
-                      <td className="p-3.5 text-slate-600">{u.phone}</td>
-                      <td className="p-3.5">
-                        <span className={`px-2.5 py-1 rounded-full font-extrabold text-[11px] ${
-                          u.role === 'farmer' 
-                            ? 'bg-blue-100 text-blue-800 border border-blue-200' 
-                            : 'bg-purple-100 text-purple-800 border border-purple-200'
-                        }`}>
-                          {u.role === 'farmer' ? '👨‍🌾 Nông Dân' : '👷‍♂️ Kỹ Thuật Viên'}
-                        </span>
-                      </td>
-                      <td className="p-3.5">
-                        <span className="text-emerald-600 font-bold text-xs flex items-center gap-1">
-                          <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> Hoạt động
-                        </span>
-                      </td>
-                      <td className="p-3.5 text-right space-x-1">
-                        <button
-                          onClick={() => setResetPassModal(u)}
-                          className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 rounded-xl font-bold text-xs border border-slate-300"
-                        >
-                          🔑 Đổi Mật Khẩu
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* STREAM REALTIME DIARY & AUDIT LOGS */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            {/* NHẬT KÝ VƯỜN & ĐỀ XUẤT ĐƠN FEED */}
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-              <h3 className="font-extrabold text-slate-900 text-sm flex items-center justify-between">
-                <span>📡 STREAM NHẬT KÝ & ĐỀ XUẤT ĐƠN REALTIME</span>
-                <span className="text-[11px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-bold">Tự động đồng bộ</span>
-              </h3>
-              
-              <div className="space-y-2.5 max-h-80 overflow-y-auto custom-scrollbar pr-1">
-                {diaries.map(d => {
-                  const garden = gardens.find(g => g.id === d.gardenId);
-                  return (
-                    <div key={d.id} className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-extrabold text-emerald-700">{garden?.name}</span>
-                        <span className="text-slate-400 font-medium">{d.date} {d.time}</span>
-                      </div>
-                      <p className="font-extrabold text-slate-900 text-xs">{d.title}</p>
-                      <p className="text-xs text-slate-600 leading-snug">{d.content}</p>
-                      <div className="flex items-center justify-between pt-1 text-[11px]">
-                        <span className="text-slate-500">Tác giả: <strong className="text-slate-800">{d.authorName}</strong> ({d.authorRole === 'farmer' ? 'Nông dân' : 'KTV'})</span>
-                        {d.type === 'proposal' && (
-                          <span className={`font-extrabold px-2 py-0.5 rounded-md ${
-                            d.proposalStatus === 'purchased' ? 'bg-emerald-100 text-emerald-800' :
-                            d.proposalStatus === 'deleted' ? 'bg-red-100 text-red-800' :
-                            'bg-amber-100 text-amber-800'
-                          }`}>
-                            {d.proposalStatus === 'purchased' ? '✓ ĐÃ MUA' : d.proposalStatus === 'deleted' ? '✕ ĐÃ XÓA' : '⏳ Chờ duyệt đơn'}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* AUDIT LOGS TABLE */}
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-              <h3 className="font-extrabold text-slate-900 text-sm flex items-center justify-between">
-                <span>🛡️ LỊCH SỬ THAO TÁC & AUDIT LOGS</span>
-                <span className="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-bold">Ghi nhận liên tục</span>
-              </h3>
-
-              <div className="space-y-2 max-h-80 overflow-y-auto custom-scrollbar pr-1 font-mono text-xs">
-                {auditLogs.map(log => (
-                  <div key={log.id} className="p-2.5 bg-slate-900 text-slate-200 rounded-xl space-y-1">
-                    <div className="flex items-center justify-between text-[11px] text-slate-400">
-                      <span className="text-emerald-400 font-bold">{log.user} ({log.role})</span>
-                      <span>{log.timestamp}</span>
-                    </div>
-                    <p className="text-amber-300 font-bold">{log.action}</p>
-                    <p className="text-slate-300 text-[11px] font-sans">{log.detail}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-          </div>
-
-          {/* MODAL TẠO USER */}
-          {newUserModal && (
-            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-              <form onSubmit={handleCreateUser} className="bg-white rounded-3xl max-w-md w-full p-5 space-y-4 shadow-2xl border border-slate-200">
-                <h3 className="font-extrabold text-slate-900 text-lg border-b pb-2">➕ TẠO USER MỚI</h3>
-                
-                <div className="space-y-3 text-sm">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Họ và tên</label>
-                    <input
-                      type="text"
-                      placeholder="Nhập tên người dùng..."
-                      value={userName}
-                      onChange={(e) => setUserName(e.target.value)}
-                      className="w-full px-3.5 py-2.5 border-2 border-slate-200 rounded-xl font-bold focus:outline-none focus:border-emerald-500"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Số điện thoại</label>
-                    <input
-                      type="tel"
-                      placeholder="Nhập SĐT..."
-                      value={userPhone}
-                      onChange={(e) => setUserPhone(e.target.value)}
-                      className="w-full px-3.5 py-2.5 border-2 border-slate-200 rounded-xl font-bold focus:outline-none focus:border-emerald-500"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Phân quyền (Role)</label>
-                    <select
-                      value={userRole}
-                      onChange={(e) => setUserRole(e.target.value)}
-                      className="w-full px-3.5 py-2.5 border-2 border-slate-200 rounded-xl font-bold focus:outline-none focus:border-emerald-500"
-                    >
-                      <option value="farmer">👨‍🌾 Nông Dân (Tự tạo vườn, ghi nhật ký, bán vườn)</option>
-                      <option value="technician">👷‍♂️ Kỹ Thuật Viên (Chỉ nhận vườn từ Web, lưu nhật ký & gửi đơn)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="flex justify-end space-x-2 pt-2 border-t">
-                  <button
-                    type="button"
-                    onClick={() => setNewUserModal(false)}
-                    className="px-4 py-2 bg-slate-100 text-slate-700 font-bold rounded-xl text-xs"
-                  >
-                    Hủy
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-5 py-2 bg-emerald-600 text-white font-extrabold rounded-xl text-xs shadow-md"
-                  >
-                    Tạo Tài Khoản
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
-
-          {/* MODAL RESET PASSWORD */}
-          {resetPassModal && (
-            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-              <div className="bg-white rounded-3xl max-w-sm w-full p-5 space-y-4 shadow-2xl border border-slate-200">
-                <h3 className="font-extrabold text-slate-900 text-base border-b pb-2">🔑 LẤY LẠI / ĐỔI MẬT KHẨU</h3>
-                <p className="text-xs text-slate-600">Đổi mật khẩu cho: <strong>{resetPassModal.name}</strong></p>
-                <input
-                  type="password"
-                  placeholder="Nhập mật khẩu mới..."
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full px-3.5 py-2.5 border-2 border-slate-200 rounded-xl font-bold text-sm focus:outline-none focus:border-emerald-500"
-                />
-                <div className="flex justify-end space-x-2 pt-2 border-t">
-                  <button
-                    onClick={() => setResetPassModal(null)}
-                    className="px-4 py-2 bg-slate-100 text-slate-700 font-bold rounded-xl text-xs"
-                  >
-                    Hủy
-                  </button>
-                  <button
-                    onClick={handleResetPassword}
-                    className="px-5 py-2 bg-blue-600 text-white font-extrabold rounded-xl text-xs shadow-md"
-                  >
-                    Cập Nhật Mật Khẩu
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-        </div>
-      );
-    }
-
-    // ==========================================
-    // 2. GIẢ LẬP APP MOBILE (NÔNG DÂN & KTV)
-    // ==========================================
-    function AppSimulatorView({ users, gardens, setGardens, diaries, setDiaries, activeUserId, appRole, handleUserSwitch, addAuditLog }) {
-      
-      const activeUser = users.find(u => u.id === activeUserId) || users[0];
-
-      // KTV Select Garden State
-      const [selectedGardenId, setSelectedGardenId] = useState('');
-      const [searchGardenKey, setSearchGardenKey] = useState('');
-
-      // Form state for new log / proposal
-      const [logTitle, setLogTitle] = useState('');
-      const [logContent, setLogContent] = useState('');
-
-      // New Garden Modal for Farmer
-      const [newGardenModal, setNewGardenModal] = useState(false);
-      const [gardenName, setGardenName] = useState('');
-      const [gardenArea, setGardenArea] = useState('');
-
-      // Filter gardens assigned to KTV
-      const assignedGardensForTech = useMemo(() => {
-        return gardens.filter(g => g.technicianId === activeUserId);
-      }, [gardens, activeUserId]);
-
-      // Filter gardens for Farmer
-      const farmerGardens = useMemo(() => {
-        return gardens.filter(g => g.farmerId === activeUserId);
-      }, [gardens, activeUserId]);
-
-      // Active selected garden in view
-      const currentSelectedGarden = useMemo(() => {
-        if (appRole === 'technician') {
-          return gardens.find(g => g.id === selectedGardenId) || assignedGardensForTech[0];
-        } else {
-          return gardens.find(g => g.id === selectedGardenId) || farmerGardens[0];
-        }
-      }, [appRole, selectedGardenId, gardens, assignedGardensForTech, farmerGardens]);
-
-      // Set default selected garden on switch
-      useEffect(() => {
-        if (appRole === 'technician' && assignedGardensForTech.length > 0) {
-          setSelectedGardenId(assignedGardensForTech[0].id);
-        } else if (appRole === 'farmer' && farmerGardens.length > 0) {
-          setSelectedGardenId(farmerGardens[0].id);
-        }
-      }, [activeUserId, appRole]);
-
-      // Farmer Add Garden Handler
-      const handleFarmerAddGarden = (e) => {
-        e.preventDefault();
-        if (!gardenName.trim()) return;
-
-        const newG = {
-          id: 'gdn_' + Date.now(),
-          name: gardenName,
-          farmerId: activeUserId,
-          farmerName: activeUser.name,
-          technicianId: null,
-          technicianName: 'Chưa gán',
-          isLocked: false,
-          area: gardenArea || '1.0 Hécta',
-          trees: 'Mới trồng'
-        };
-
-        setGardens([...gardens, newG]);
-        addAuditLog(activeUser.name, 'farmer', 'Tạo Vườn Mới', `Nông dân tạo vườn "${newG.name}" trên App`);
-        setSelectedGardenId(newG.id);
-        setGardenName('');
-        setGardenArea('');
-        setNewGardenModal(false);
-      };
-
-      // Farmer Delete Garden
-      const handleFarmerDeleteGarden = (garden) => {
-        if (garden.isLocked) {
-          alert('❌ Vườn này đang được đầu tư & đã khóa trên Web Dashboard. Nông dân không thể xóa!');
-          return;
-        }
-        if (confirm(`Bạn có chắc chắn muốn xóa vườn "${garden.name}"?`)) {
-          setGardens(gardens.filter(g => g.id !== garden.id));
-          addAuditLog(activeUser.name, 'farmer', 'Xóa Vườn', `Nông dân xóa vườn "${garden.name}"`);
-        }
-      };
-
-      // Farmer Sell Garden
-      const handleFarmerSellGarden = (garden) => {
-        if (garden.isLocked) {
-          alert('❌ Vườn này đang được đầu tư & đã khóa. Không thể thực hiện bán vườn!');
-          return;
-        }
-        alert(`🎉 Đã đăng bán thành công vườn "${garden.name}" lên hệ thống!`);
-        addAuditLog(activeUser.name, 'farmer', 'Đăng Bán Vườn', `Nông dân kích hoạt bán vườn "${garden.name}"`);
-      };
-
-      // Save Visit Log (Both Farmer & Technician)
-      const handleSaveDiaryLog = (type = 'normal') => {
-        if (!currentSelectedGarden) {
-          alert('Vui lòng chọn vườn trước khi lưu!');
-          return;
-        }
-        if (!logTitle.trim()) {
-          alert('Vui lòng nhập nội dung tiêu đề!');
-          return;
-        }
-
-        const now = new Date();
-        const newLog = {
-          id: 'dry_' + Date.now(),
-          gardenId: currentSelectedGarden.id,
-          authorId: activeUserId,
-          authorName: activeUser.name,
-          authorRole: appRole,
-          title: logTitle,
-          content: logContent || 'Đã ghi nhận thăm vườn trực tiếp.',
-          date: now.toLocaleDateString('vi-VN'),
-          time: now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
-          type: type, // 'normal' | 'proposal'
-          proposalStatus: type === 'proposal' ? 'pending' : null
-        };
-
-        setDiaries([newLog, ...diaries]);
-        addAuditLog(
-          activeUser.name, 
-          appRole, 
-          type === 'proposal' ? 'KTV Gửi Đề Xuất Đơn' : 'Lưu Nhật Ký Thăm Vườn', 
-          `Tạo nhật ký cho vườn "${currentSelectedGarden.name}": ${logTitle}`
-        );
-
-        setLogTitle('');
-        setLogContent('');
-        alert(type === 'proposal' ? '🚀 Đã gửi đề xuất đơn phân thuốc thành công!' : '✅ Đã lưu nhật ký thăm vườn!');
-      };
-
-      // Farmer handles Order Proposal (ĐÃ MUA / XÓA)
-      const handleProposalAction = (diaryId, actionStatus) => {
-        setDiaries(prev => prev.map(d => {
-          if (d.id === diaryId) {
-            return { ...d, proposalStatus: actionStatus };
-          }
-          return d;
-        }));
-
-        const statusLabel = actionStatus === 'purchased' ? 'ĐÃ MUA' : 'ĐÃ XÓA';
-        addAuditLog(
-          activeUser.name, 
-          'farmer', 
-          `Nông Dân Bấm ${statusLabel}`, 
-          `Nông dân xác nhận ${statusLabel} cho đề xuất đơn #${diaryId}`
-        );
-      };
-
-      // Filtered diaries for current garden
-      const currentGardenDiaries = diaries.filter(d => d.gardenId === currentSelectedGarden?.id);
-
-      return (
-        <div className="space-y-4 max-w-4xl mx-auto">
-          
-          {/* SWITCH USER / ROLE BAR */}
-          <div className="bg-white p-3 sm:p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">GIẢ LẬP ĐĂNG NHẬP THIẾT BỊ APP MOBILE</p>
-              <p className="text-sm font-extrabold text-slate-900 mt-0.5">
-                Đang dùng app với vai trò: <span className={appRole === 'farmer' ? 'text-blue-600' : 'text-purple-600'}>
-                  {appRole === 'farmer' ? '👨‍🌾 Nông Dân' : '👷‍♂️ Kỹ Thuật Viên'}
-                </span>
-              </p>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <span className="text-xs font-bold text-slate-600">Chọn User:</span>
-              <select
-                value={activeUserId}
-                onChange={(e) => handleUserSwitch(e.target.value)}
-                className="bg-slate-100 border-2 border-slate-300 font-extrabold text-xs sm:text-sm rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-emerald-500"
-              >
-                {users.map(u => (
-                  <option key={u.id} value={u.id}>{u.name} ({u.role === 'farmer' ? 'Nông Dân' : 'KTV'})</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* SIMULATED MOBILE PHONE CONTAINER */}
-          <div className="max-w-md mx-auto bg-slate-900 rounded-[40px] p-3 shadow-2xl border-4 border-slate-800">
-            
-            {/* MOBILE SCREEN INNER */}
-            <div className="bg-slate-50 rounded-[32px] overflow-hidden min-h-[680px] flex flex-col font-sans select-none relative">
-              
-              {/* TOP STATUS BAR */}
-              <div className="bg-slate-900 text-white px-5 py-2 flex items-center justify-between text-[11px] font-bold">
-                <span>09:41</span>
-                <div className="flex items-center space-x-1.5">
-                  <span>📶</span>
-                  <span>5G</span>
-                  <span>🔋 98%</span>
-                </div>
-              </div>
-
-              {/* APP HEADER */}
-              <div className="bg-emerald-600 text-white px-4 py-3 flex items-center justify-between shadow-md">
-                <div>
-                  <h1 className="font-black text-sm uppercase tracking-tight flex items-center gap-1">
-                    <span>🌱</span> NÔNG NGHIỆP VIỆT APP
-                  </h1>
-                  <p className="text-[11px] text-emerald-100 font-medium">{activeUser.name}</p>
-                </div>
-                <span className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase ${
-                  appRole === 'farmer' ? 'bg-blue-500 text-white' : 'bg-purple-500 text-white'
-                }`}>
-                  {appRole === 'farmer' ? 'NÔNG DÂN' : 'KỸ THUẬT'}
-                </span>
-              </div>
-
-              {/* BODY CONTENT DEPENDING ON ROLE */}
-              <div className="flex-1 p-3 space-y-3 overflow-y-auto custom-scrollbar pb-10">
-                
-                {/* ------------------- ROLE 1: USER NÔNG DÂN ------------------- */}
-                {appRole === 'farmer' && (
-                  <div className="space-y-3">
-                    
-                    {/* FARMER HEADER ACTIONS */}
-                    <div className="flex items-center justify-between bg-white p-2.5 rounded-2xl border border-slate-200 shadow-xs">
-                      <div>
-                        <p className="text-xs font-black text-slate-800">DANH SÁCH VƯỜN CỦA TÔI</p>
-                        <p className="text-[10px] text-slate-500">Tự tạo, ghi nhật ký, đăng bán</p>
-                      </div>
-                      <button
-                        onClick={() => setNewGardenModal(true)}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl font-extrabold text-xs shadow-xs active:scale-95"
-                      >
-                        ➕ Thêm Vườn
-                      </button>
-                    </div>
-
-                    {/* SELECT OR LIST FARMER GARDENS */}
-                    <div className="space-y-2">
-                      {farmerGardens.length === 0 ? (
-                        <div className="p-4 bg-white rounded-2xl text-center text-slate-400 text-xs font-bold border border-dashed">
-                          Chưa có vườn nào. Bấm "Thêm Vườn" ở trên để tạo!
-                        </div>
-                      ) : (
-                        farmerGardens.map((g) => (
-                          <div
-                            key={g.id}
-                            onClick={() => setSelectedGardenId(g.id)}
-                            className={`p-3 rounded-2xl border-2 transition-all cursor-pointer ${
-                              currentSelectedGarden?.id === g.id
-                                ? 'bg-emerald-50 border-emerald-500 shadow-xs'
-                                : 'bg-white border-slate-200 hover:border-slate-300'
-                            }`}
-                          >
-                            <div className="flex items-center justify-between">
-                              <span className="font-black text-slate-900 text-xs sm:text-sm">{g.name}</span>
-                              {g.isLocked ? (
-                                <span className="bg-amber-100 text-amber-800 text-[10px] font-black px-2 py-0.5 rounded-full border border-amber-300">
-                                  🔒 Đang được KTV chăm sóc (Khóa)
-                                </span>
-                              ) : (
-                                <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                                  🔓 Vườn tự do
-                                </span>
-                              )}
-                            </div>
-
-                            <p className="text-[11px] text-slate-500 mt-1">{g.area} • {g.trees} • KTV: {g.technicianName}</p>
-
-                            {/* FARMER GARDEN BUTTONS (BÁN VƯỜN / XOÁ VƯỜN) */}
-                            <div className="flex items-center justify-end space-x-2 mt-2 pt-2 border-t border-slate-100">
-                              <button
-                                onClick={(e) => { e.stopPropagation(); handleFarmerSellGarden(g); }}
-                                disabled={g.isLocked}
-                                className={`px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition-all ${
-                                  g.isLocked 
-                                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
-                                    : 'bg-blue-600 text-white shadow-xs active:scale-95'
-                                }`}
-                              >
-                                🏷️ Bán Vườn
-                              </button>
-                              <button
-                                onClick={(e) => { e.stopPropagation(); handleFarmerDeleteGarden(g); }}
-                                disabled={g.isLocked}
-                                className={`px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition-all ${
-                                  g.isLocked 
-                                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
-                                    : 'bg-red-500 text-white shadow-xs active:scale-95'
-                                }`}
-                              >
-                                🗑️ Xóa Vườn
-                              </button>
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-
-                  </div>
-                )}
-
-
-                {/* ------------------- ROLE 2: USER KỸ THUẬT VIÊN ------------------- */}
-                {appRole === 'technician' && (
-                  <div className="space-y-3">
-                    
-                    {/* KTV WARNING / INFO */}
-                    <div className="bg-purple-50 p-2.5 rounded-2xl border border-purple-200 text-xs text-purple-900 font-medium">
-                      ⚠️ Kỹ thuật viên không thể tự tạo/xóa vườn. Chỉ nhận thông tin vườn được gán từ <strong>Web Dashboard</strong>.
-                    </div>
-
-                    {/* SELECT GẠN VƯỜN CHO KTV VÀ TÌM KIẾM NHANH */}
-                    <div className="bg-white p-3 rounded-2xl border border-slate-200 space-y-2 shadow-xs">
-                      <label className="block text-xs font-black text-slate-900 uppercase">
-                        🔍 CHỌN VƯỜN PHỤ TRÁCH ({assignedGardensForTech.length} VƯỜN)
-                      </label>
-
-                      {/* QUICK SEARCH INPUT */}
-                      <input
-                        type="text"
-                        placeholder="Nhập để tìm kiếm nhanh theo tên vườn..."
-                        value={searchGardenKey}
-                        onChange={(e) => setSearchGardenKey(e.target.value)}
-                        className="w-full px-3 py-1.5 text-xs font-bold border-2 border-slate-200 rounded-xl focus:outline-none focus:border-purple-500"
-                      />
-
-                      {/* DROPDOWN CHỌN VƯỜN */}
-                      <select
-                        value={selectedGardenId}
-                        onChange={(e) => setSelectedGardenId(e.target.value)}
-                        className="w-full px-3 py-2 text-xs font-extrabold bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-purple-500"
-                      >
-                        {assignedGardensForTech.length === 0 ? (
-                          <option value="">-- Chưa có vườn nào được gán cho bạn --</option>
-                        ) : (
-                          assignedGardensForTech
-                            .filter(g => g.name.toLowerCase().includes(searchGardenKey.toLowerCase()))
-                            .map(g => (
-                              <option key={g.id} value={g.id}>
-                                🏡 {g.name} - ({g.farmerName})
-                              </option>
-                            ))
-                        )}
-                      </select>
-                    </div>
-
-                    {/* FORM LƯU NHẬT KÝ VÀ GỬI ĐƠN DÀNH CHO KTV */}
-                    {currentSelectedGarden && (
-                      <div className="bg-white p-3 rounded-2xl border border-slate-200 space-y-2.5 shadow-xs">
-                        <p className="text-xs font-black text-slate-900 border-b pb-1">
-                          📝 NHẬP NHẬT KÝ THĂM VƯỜN / ĐỀ XUẤT ĐƠN
-                        </p>
-
-                        <input
-                          type="text"
-                          placeholder="Tiêu đề nhật ký / tên đơn phân thuốc..."
-                          value={logTitle}
-                          onChange={(e) => setLogTitle(e.target.value)}
-                          className="w-full px-3 py-2 text-xs font-bold border-2 border-slate-200 rounded-xl focus:outline-none focus:border-purple-500"
-                        />
-
-                        <textarea
-                          placeholder="Nội dung chi tiết thăm vườn hoặc chi tiết đơn đề xuất..."
-                          value={logContent}
-                          onChange={(e) => setLogContent(e.target.value)}
-                          rows="2"
-                          className="w-full px-3 py-2 text-xs font-medium border-2 border-slate-200 rounded-xl focus:outline-none focus:border-purple-500"
-                        ></textarea>
-
-                        <div className="grid grid-cols-2 gap-2 pt-1">
-                          <button
-                            onClick={() => handleSaveDiaryLog('normal')}
-                            className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-xs active:scale-95 uppercase tracking-tight"
-                          >
-                            💾 LƯU NHẬT KÍ
-                          </button>
-                          <button
-                            onClick={() => handleSaveDiaryLog('proposal')}
-                            className="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs rounded-xl shadow-xs active:scale-95 uppercase tracking-tight"
-                          >
-                            🚀 GỬI ĐƠN
-                          </button>
-                        </div>
-                      </div>
-                    )}
-
-                  </div>
-                )}
-
-
-                {/* ------------------- TRANG THĂM VƯỜN & HIỂN THỊ NHẬT KÝ (DÙNG CHUNG CẢ 2 VAI TRÒ) ------------------- */}
-                {currentSelectedGarden && (
-                  <div className="bg-white p-3 rounded-2xl border border-slate-200 space-y-3 shadow-xs">
-                    
-                    <div className="flex items-center justify-between border-b pb-2">
-                      <div>
-                        <p className="text-xs font-black text-slate-900">{currentSelectedGarden.name}</p>
-                        <p className="text-[10px] text-slate-500">Nhật ký thăm vườn & Đề xuất đơn</p>
-                      </div>
-                      <span className="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
-                        {currentGardenDiaries.length} Nhật ký
-                      </span>
-                    </div>
-
-                    {/* DANH SÁCH THẺ NHẬT KÝ */}
-                    <div className="space-y-2.5">
-                      {currentGardenDiaries.length === 0 ? (
-                        <p className="text-center text-slate-400 text-xs py-4">Chưa có nhật ký nào cho vườn này.</p>
-                      ) : (
-                        currentGardenDiaries.map((diary) => {
-                          const isTechAuthor = diary.authorRole === 'technician';
-                          
-                          return (
-                            <div
-                              key={diary.id}
-                              className="p-3 bg-slate-50 rounded-2xl border-2 border-slate-100 relative space-y-1.5 transition-all"
-                            >
-                              
-                              {/* THẺ BÌNH THƯỜNG HOẶC THẺ ĐỀ XUẤT ĐƠN */}
-                              <div className="flex items-start justify-between gap-2">
-                                <div className="space-y-0.5">
-                                  <p className="text-xs font-black text-slate-900 leading-snug">{diary.title}</p>
-                                  <p className="text-[11px] text-slate-600 leading-normal">{diary.content}</p>
-                                </div>
-                                <span className="text-[10px] font-bold text-slate-400 shrink-0">{diary.time}</span>
-                              </div>
-
-                              <div className="flex items-center justify-between text-[10px] pt-1 border-t border-slate-200/60">
-                                <span className="font-bold text-slate-500">Tác giả: {diary.authorName} ({isTechAuthor ? 'KTV' : 'Nông dân'})</span>
-                                <span className="text-slate-400 font-medium">{diary.date}</span>
-                              </div>
-
-                              {/* 📍 CHẤM XANH LÁ Ở GÓC DƯỚI BÊN TRÁI NẾU LÀ NHẬT KÝ CỦA KỸ THUẬT VIÊN */}
-                              {isTechAuthor && (
-                                <span 
-                                  className="w-3 h-3 bg-emerald-500 border-2 border-white rounded-full absolute -bottom-1 -left-1 shadow-xs animate-pulse"
-                                  title="Nhật ký được tạo bởi Kỹ Thuật Viên"
-                                />
-                              )}
-
-                              {/* ---------------- THẺ ĐỀ XUẤT ĐƠN (PROPOSAL CARD) ---------------- */}
-                              {diary.type === 'proposal' && (
-                                <div className="mt-2 p-2 bg-amber-50 rounded-xl border border-amber-200 space-y-2">
-                                  <div className="flex items-center justify-between text-[11px]">
-                                    <span className="font-black text-amber-900">📦 ĐỀ XUẤT ĐƠN VẬT TƯ</span>
-                                    
-                                    {/* HIỂN THỊ GHI CHÚ BÊN APP KỸ THUẬT HOẶC NÔNG DÂN */}
-                                    {diary.proposalStatus === 'purchased' && (
-                                      <span className="bg-emerald-600 text-white font-black px-2 py-0.5 rounded-lg text-[10px]">
-                                        ✓ Đã mua
-                                      </span>
-                                    )}
-                                    {diary.proposalStatus === 'deleted' && (
-                                      <span className="bg-red-500 text-white font-black px-2 py-0.5 rounded-lg text-[10px]">
-                                        ✕ Đã xóa
-                                      </span>
-                                    )}
-                                    {diary.proposalStatus === 'pending' && (
-                                      <span className="bg-amber-200 text-amber-900 font-extrabold px-2 py-0.5 rounded-lg text-[10px]">
-                                        ⏳ Chờ phản hồi
-                                      </span>
-                                    )}
-                                  </div>
-
-                                  {/* NÚT BẤM ĐÃ MUA / XOÁ CHO NÔNG DÂN (HOẶC XEM TRẠNG THÁI CHO KTV) */}
-                                  {diary.proposalStatus === 'pending' && (
-                                    <div className="flex items-center space-x-2 pt-1">
-                                      {appRole === 'farmer' ? (
-                                        <>
-                                          <button
-                                            onClick={() => handleProposalAction(diary.id, 'purchased')}
-                                            className="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-lg shadow-xs active:scale-95 uppercase"
-                                          >
-                                            ✓ ĐÃ MUA
-                                          </button>
-                                          <button
-                                            onClick={() => handleProposalAction(diary.id, 'deleted')}
-                                            className="flex-1 py-1.5 bg-red-500 hover:bg-red-600 text-white font-black text-xs rounded-lg shadow-xs active:scale-95 uppercase"
-                                          >
-                                            ✕ XOÁ
-                                          </button>
-                                        </>
-                                      ) : (
-                                        <p className="text-[10px] text-amber-800 font-bold italic text-center w-full">
-                                          Đã gửi đơn tới Nông dân. Đang chờ Nông dân bấm "Đã mua" hoặc "Xóa".
-                                        </p>
-                                      )}
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-
-                            </div>
-                          );
-                        })
-                      )}
-                    </div>
-
-                  </div>
-                )}
-
-              </div>
-
-              {/* BOTTOM APP NAVIGATION */}
-              <div className="bg-white border-t border-slate-200 px-6 py-2 flex items-center justify-around text-center text-slate-500 text-[10px] font-bold">
-                <div className="text-emerald-600">
-                  <p className="text-base">🏡</p>
-                  <p>Vườn của tôi</p>
-                </div>
-                <div>
-                  <p className="text-base">📋</p>
-                  <p>Nhật ký</p>
-                </div>
-                <div>
-                  <p className="text-base">💰</p>
-                  <p>Tài chính</p>
-                </div>
-                <div>
-                  <p className="text-base">👤</p>
-                  <p>Tài khoản</p>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          {/* MODAL FARMER THÊM VƯỜN */}
-          {newGardenModal && (
-            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-              <form onSubmit={handleFarmerAddGarden} className="bg-white rounded-3xl max-w-xs w-full p-4 space-y-3 shadow-2xl border border-slate-200">
-                <h3 className="font-extrabold text-slate-900 text-sm border-b pb-2">🏡 THÊM VƯỜN MỚI (NÔNG DÂN)</h3>
-                
-                <div className="space-y-2 text-xs">
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Tên vườn</label>
-                    <input
-                      type="text"
-                      placeholder="Ví dụ: Vườn Sầu Riêng Lô B..."
-                      value={gardenName}
-                      onChange={(e) => setGardenName(e.target.value)}
-                      className="w-full px-3 py-2 border-2 border-slate-200 rounded-xl font-bold focus:outline-none focus:border-emerald-500"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Diện tích / Quy mô</label>
-                    <input
-                      type="text"
-                      placeholder="Ví dụ: 2 Hécta (150 gốc)"
-                      value={gardenArea}
-                      onChange={(e) => setGardenArea(e.target.value)}
-                      className="w-full px-3 py-2 border-2 border-slate-200 rounded-xl font-bold focus:outline-none focus:border-emerald-500"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex justify-end space-x-2 pt-2 border-t">
-                  <button
-                    type="button"
-                    onClick={() => setNewGardenModal(false)}
-                    className="px-3 py-1.5 bg-slate-100 text-slate-700 font-bold rounded-xl text-xs"
-                  >
-                    Hủy
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-1.5 bg-emerald-600 text-white font-extrabold rounded-xl text-xs shadow-md"
-                  >
-                    Tạo Vườn
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
-
-        </div>
-      );
-    }
-
-    // ==========================================
-    // 3. SUPABASE SQL SETUP SCRIPT GENERATOR
-    // ==========================================
-    function SupabaseSqlView() {
-      const [copied, setCopied] = useState(false);
-
-      const sqlCode = `-- ============================================================
--- SCRIPT CẤU TRÚC DATABASE SUPABASE CHO HỆ THỐNG NÔNG NGHIỆP VIỆT
--- Bao gồm: Phân quyền RLS, Tự động khóa dữ liệu, Audit Logs & Realtime
--- ============================================================
-
--- 1. BẢNG PHÂN QUYỀN USER (PROFILES)
-CREATE TABLE IF NOT EXISTS public.profiles (
-  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  full_name TEXT NOT NULL,
-  phone TEXT UNIQUE NOT NULL,
-  role TEXT NOT NULL CHECK (role IN ('farmer', 'technician', 'admin')),
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- 2. BẢNG DÂN SÁCH VƯỜN (GARDENS)
-CREATE TABLE IF NOT EXISTS public.gardens (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  farmer_id UUID NOT NULL REFERENCES public.profiles(id),
-  technician_id UUID REFERENCES public.profiles(id),
-  name TEXT NOT NULL,
-  area TEXT,
-  trees TEXT,
-  is_locked BOOLEAN DEFAULT FALSE, -- Bật TRUE khi gán KTV hoặc đang đầu tư
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- 3. BẢNG NHẬT KÝ THĂM VƯỜN & ĐỀ XUẤT ĐƠN (DIARIES)
-CREATE TABLE IF NOT EXISTS public.diaries (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  garden_id UUID NOT NULL REFERENCES public.gardens(id) ON DELETE CASCADE,
-  author_id UUID NOT NULL REFERENCES public.profiles(id),
-  author_role TEXT NOT NULL CHECK (author_role IN ('farmer', 'technician')),
-  title TEXT NOT NULL,
-  content TEXT,
-  type TEXT DEFAULT 'normal' CHECK (type IN ('normal', 'proposal')),
-  proposal_status TEXT DEFAULT NULL CHECK (proposal_status IN ('pending', 'purchased', 'deleted')),
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- 4. BẢNG GHI VẾT THAO TÁC AUDIT LOGS
-CREATE TABLE IF NOT EXISTS public.audit_logs (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_name TEXT,
-  role TEXT,
-  action TEXT NOT NULL,
-  detail TEXT,
-  timestamp TIMESTAMPTZ DEFAULT NOW()
-);
-
--- ============================================================
--- ROW LEVEL SECURITY (RLS) POLICIES (BẢO MẬT NÂNG CAO)
--- ============================================================
-ALTER TABLE public.gardens ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.diaries ENABLE ROW LEVEL SECURITY;
-
--- Quy tắc Nông dân không thể SỬA / XÓA vườn nếu is_locked = TRUE
-CREATE POLICY "Kiem_Soat_Xoa_Vuon_Locked" ON public.gardens
-FOR DELETE USING (
-  auth.uid() = farmer_id AND is_locked = FALSE
-);
-
--- Bat Realtime cho cac bang
-ALTER PUBLICATION supabase_realtime ADD TABLE public.gardens, public.diaries, public.audit_logs;
-`;
-
-      const handleCopy = () => {
-        navigator.clipboard.writeText(sqlCode);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      };
-
-      return (
-        <div className="bg-slate-900 text-slate-100 p-4 sm:p-6 rounded-3xl space-y-4 font-mono text-xs shadow-xl">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <div>
-              <h2 className="font-extrabold text-sm text-emerald-400">🗄️ SUPABASE DATABASE SQL SCHEMA SCRIPT</h2>
-              <p className="text-[11px] text-slate-400 font-sans mt-0.5">Copy đoạn mã SQL này và chạy trong SQL Editor của Supabase Dashboard.</p>
-            </div>
-            <button
-              onClick={handleCopy}
-              className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black px-4 py-2 rounded-xl text-xs font-sans transition-all active:scale-95"
-            >
-              {copied ? '✓ Đã Copy!' : '📋 Copy Mã SQL'}
+            <button class="w-full py-2 bg-sky-600 hover:bg-sky-500 text-white rounded font-medium flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-mobile-screen"></i>
+                <span>Giả Lập App Mobile</span>
             </button>
-          </div>
-
-          <pre className="overflow-x-auto p-4 bg-slate-950 rounded-2xl text-slate-300 leading-relaxed custom-scrollbar border border-slate-800">
-            {sqlCode}
-          </pre>
         </div>
-      );
-    }
+    </aside>
 
-    // Render App
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<MainApp />);
-  </script>
+    <!-- KHUNG NỘI DUNG CHÍNH (BÊN PHẢI) -->
+    <div class="flex-1 flex flex-col h-screen overflow-y-auto">
+        
+        <!-- Header TopBar -->
+        <header class="bg-white border-b px-6 py-3 flex justify-between items-center sticky top-0 z-10 shadow-sm">
+            <div class="flex items-center space-x-2">
+                <span class="text-xs bg-sky-100 text-sky-700 px-2.5 py-1 rounded-full font-semibold">Web Dashboard (Quản Trị)</span>
+                <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full border">Supabase SQL Setup</span>
+            </div>
+            <div class="flex items-center space-x-3">
+                <span class="text-sm text-slate-600 font-medium">Admin System</span>
+                <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold">A</div>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="p-6 space-y-6">
+
+            <!-- 1. STATS CARDS (THỐNG KÊ RÚT GỌN) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">TỔNG USER</p>
+                        <h3 class="text-2xl font-bold text-slate-800 mt-1">4</h3>
+                        <p class="text-xs text-slate-500 mt-1">2 Nông dân • 2 KTV</p>
+                    </div>
+                    <div class="p-3 bg-sky-50 text-sky-600 rounded-lg"><i class="fa-solid fa-users text-xl"></i></div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">TỔNG VƯỜN</p>
+                        <h3 class="text-2xl font-bold text-emerald-600 mt-1">3</h3>
+                        <p class="text-xs text-slate-500 mt-1">2 Vườn đang gắn KTV</p>
+                    </div>
+                    <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg"><i class="fa-solid fa-tree text-xl"></i></div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">NHẬT KÝ & ĐỀ XUẤT</p>
+                        <h3 class="text-2xl font-bold text-amber-500 mt-1">3</h3>
+                        <p class="text-xs text-slate-500 mt-1">1 Đề xuất đơn mới</p>
+                    </div>
+                    <div class="p-3 bg-amber-50 text-amber-600 rounded-lg"><i class="fa-solid fa-file-signature text-xl"></i></div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">AUDIT LOGS</p>
+                        <h3 class="text-2xl font-bold text-rose-500 mt-1">3</h3>
+                        <p class="text-xs text-slate-500 mt-1">Lịch sử thao tác ghi lại</p>
+                    </div>
+                    <div class="p-3 bg-rose-50 text-rose-600 rounded-lg"><i class="fa-solid fa-clock-rotate-left text-xl"></i></div>
+                </div>
+            </div>
+
+            <!-- 2. QUẢN LÝ VƯỜN & GẮN KTV -->
+            <section id="quan-ly-vuon" class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="p-4 border-b border-slate-100 bg-slate-50/50">
+                    <h2 class="font-bold text-slate-800 flex items-center space-x-2">
+                        <i class="fa-solid fa-lock text-amber-500"></i>
+                        <span>QUẢN LÝ VƯỜN, GẮN KỸ THUẬT VIÊN & KHÓA DỮ LIỆU</span>
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Khi vườn được gắn KTV, dữ liệu trên App Nông Dân & KTV sẽ tự động bị KHÓA.</p>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-100/70 text-slate-600 border-b border-slate-200 text-xs uppercase font-semibold">
+                                <th class="p-3">Tên Vườn</th>
+                                <th class="p-3">Nông Dân (Sở hữu)</th>
+                                <th class="p-3">Kỹ Thuật Viên Phụ Trách</th>
+                                <th class="p-3">Trạng Thái Khóa</th>
+                                <th class="p-3 text-right">Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-semibold text-slate-800">Vườn Sầu Riêng - Lô A1 <span class="block text-xs font-normal text-slate-400">1.5 Hécta • 120 Cây Thái</span></td>
+                                <td class="p-3">Anh Sáu (Nông Dân)</td>
+                                <td class="p-3">
+                                    <select class="border rounded px-2 py-1 text-xs bg-white text-slate-700">
+                                        <option>KTV Minh (Kỹ Thuật)</option>
+                                    </select>
+                                </td>
+                                <td class="p-3"><span class="bg-amber-100 text-amber-800 text-xs font-medium px-2.5 py-1 rounded-full"><i class="fa-solid fa-lock text-xs mr-1"></i>ĐÃ KHÓA (Đầu tư)</span></td>
+                                <td class="p-3 text-right"><button class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs font-medium border">Bật Mở Khóa</button></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-semibold text-slate-800">Vườn Cà Phê - Đồi 2 <span class="block text-xs font-normal text-slate-400">2.0 Hécta • 2000 Gốc Robusta</span></td>
+                                <td class="p-3">Anh Sáu (Nông Dân)</td>
+                                <td class="p-3">
+                                    <select class="border rounded px-2 py-1 text-xs bg-white text-slate-700">
+                                        <option>-- Chưa gắn KTV --</option>
+                                    </select>
+                                </td>
+                                <td class="p-3"><span class="bg-emerald-100 text-emerald-800 text-xs font-medium px-2.5 py-1 rounded-full"><i class="fa-solid fa-lock-open text-xs mr-1"></i>Mở khóa</span></td>
+                                <td class="p-3 text-right"><button class="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded text-xs font-medium shadow-sm">Khóa Dữ Liệu</button></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-semibold text-slate-800">Vườn Mắc Ca - Trang Trại B <span class="block text-xs font-normal text-slate-400">3.0 Hécta • 450 Cây</span></td>
+                                <td class="p-3">Chú Ba (Nông Dân)</td>
+                                <td class="p-3">
+                                    <select class="border rounded px-2 py-1 text-xs bg-white text-slate-700">
+                                        <option>KTV Hoàng (Kỹ Thuật)</option>
+                                    </select>
+                                </td>
+                                <td class="p-3"><span class="bg-amber-100 text-amber-800 text-xs font-medium px-2.5 py-1 rounded-full"><i class="fa-solid fa-lock text-xs mr-1"></i>ĐÃ KHÓA (Đầu tư)</span></td>
+                                <td class="p-3 text-right"><button class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs font-medium border">Bật Mở Khóa</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 3. QUẢN LÝ TÀI KHOẢN & PHÂN QUYỀN USER -->
+            <section id="quan-ly-user" class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="p-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                    <div>
+                        <h2 class="font-bold text-slate-800 flex items-center space-x-2">
+                            <i class="fa-solid fa-user-gear text-sky-500"></i>
+                            <span>QUẢN LÝ TÀI KHOẢN & PHÂN QUYỀN USER</span>
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Tạo tài khoản mới, cập nhật phân quyền (Nông dân / KTV) và Reset mật khẩu.</p>
+                    </div>
+                    <button class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1 shadow-sm">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Tạo User Mới</span>
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-100/70 text-slate-600 border-b border-slate-200 text-xs uppercase font-semibold">
+                                <th class="p-3">Họ & Tên User</th>
+                                <th class="p-3">Số Điện Thoại</th>
+                                <th class="p-3">Vai Trò (Role)</th>
+                                <th class="p-3">Trạng Thái</th>
+                                <th class="p-3 text-right">Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-medium text-slate-800">Anh Sáu (Nông Dân)</td>
+                                <td class="p-3 text-slate-600">0901234567</td>
+                                <td class="p-3"><span class="bg-sky-100 text-sky-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">Nông Dân</span></td>
+                                <td class="p-3"><span class="text-emerald-600 text-xs font-medium"><i class="fa-solid fa-circle text-[8px] mr-1"></i>Hoạt động</span></td>
+                                <td class="p-3 text-right"><button class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded text-xs border"><i class="fa-solid fa-key text-amber-500 mr-1"></i>Đổi Mật Khẩu</button></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-medium text-slate-800">Chú Ba (Nông Dân)</td>
+                                <td class="p-3 text-slate-600">0908765432</td>
+                                <td class="p-3"><span class="bg-sky-100 text-sky-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">Nông Dân</span></td>
+                                <td class="p-3"><span class="text-emerald-600 text-xs font-medium"><i class="fa-solid fa-circle text-[8px] mr-1"></i>Hoạt động</span></td>
+                                <td class="p-3 text-right"><button class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded text-xs border"><i class="fa-solid fa-key text-amber-500 mr-1"></i>Đổi Mật Khẩu</button></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-medium text-slate-800">KTV Minh (Kỹ Thuật)</td>
+                                <td class="p-3 text-slate-600">0912345678</td>
+                                <td class="p-3"><span class="bg-purple-100 text-purple-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">Kỹ Thuật Viên</span></td>
+                                <td class="p-3"><span class="text-emerald-600 text-xs font-medium"><i class="fa-solid fa-circle text-[8px] mr-1"></i>Hoạt động</span></td>
+                                <td class="p-3 text-right"><button class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded text-xs border"><i class="fa-solid fa-key text-amber-500 mr-1"></i>Đổi Mật Khẩu</button></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-medium text-slate-800">KTV Hoàng (Kỹ Thuật)</td>
+                                <td class="p-3 text-slate-600">0919998888</td>
+                                <td class="p-3"><span class="bg-purple-100 text-purple-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">Kỹ Thuật Viên</span></td>
+                                <td class="p-3"><span class="text-emerald-600 text-xs font-medium"><i class="fa-solid fa-circle text-[8px] mr-1"></i>Hoạt động</span></td>
+                                <td class="p-3 text-right"><button class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded text-xs border"><i class="fa-solid fa-key text-amber-500 mr-1"></i>Đổi Mật Khẩu</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 4. STREAM NHẬT KÝ & AUDIT LOGS (CHIA 2 CỘT) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Nhật ký & Đề xuất -->
+                <section id="nhat-ky" class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+                    <div class="flex justify-between items-center mb-4 pb-2 border-b">
+                        <h2 class="font-bold text-slate-800 flex items-center space-x-2">
+                            <i class="fa-solid fa-pen-to-square text-emerald-600"></i>
+                            <span>STREAM NHẬT KÝ & ĐỀ XUẤT REALTIME</span>
+                        </h2>
+                        <span class="text-xs bg-purple-50 text-purple-700 font-semibold px-2 py-0.5 rounded">Tự động đồng bộ</span>
+                    </div>
+
+                    <div class="space-y-3 max-h-[350px] overflow-y-auto pr-1">
+                        <div class="p-3 rounded-lg border bg-slate-50/70 border-slate-200">
+                            <div class="flex justify-between text-xs font-bold text-emerald-700">
+                                <span>Vườn Sầu Riêng - Lô A1</span>
+                                <span class="text-slate-400 font-normal">15/08/2026 08:30</span>
+                            </div>
+                            <h4 class="font-semibold text-slate-800 text-sm mt-1">Tưới nước đợt 2 & Dọn cỏ xung quanh gốc sầu riêng</h4>
+                            <p class="text-xs text-slate-600 mt-0.5">Tưới béc phun tự động 2 tiếng. Cỏ dại quanh gốc đã được cắt phát gọn gàng.</p>
+                            <span class="text-[11px] text-slate-400 block mt-2">Tác giả: <strong>Anh Sáu (Nông dân)</strong></span>
+                        </div>
+
+                        <div class="p-3 rounded-lg border bg-slate-50/70 border-slate-200">
+                            <div class="flex justify-between text-xs font-bold text-emerald-700">
+                                <span>Vườn Sầu Riêng - Lô A1</span>
+                                <span class="text-slate-400 font-normal">16/08/2026 09:15</span>
+                            </div>
+                            <h4 class="font-semibold text-slate-800 text-sm mt-1">Thăm vườn định kỳ: Kiểm tra rầy nhảy và xì mủ thân</h4>
+                            <p class="text-xs text-slate-600 mt-0.5">Phát hiện vết rầy nhẹ trên đọt non sầu riêng. Đã xử lý rửa lá đọt 1.</p>
+                            <span class="text-[11px] text-slate-400 block mt-2">Tác giả: <strong>KTV Minh (KTV)</strong></span>
+                        </div>
+
+                        <div class="p-3 rounded-lg border bg-amber-50/50 border-amber-200">
+                            <div class="flex justify-between text-xs font-bold text-amber-700">
+                                <span>Vườn Sầu Riêng - Lô A1</span>
+                                <span class="text-slate-400 font-normal">16/08/2026 10:00</span>
+                            </div>
+                            <h4 class="font-semibold text-slate-800 text-sm mt-1">Đề xuất đơn phân bón & Thuốc trừ rầy nấm</h4>
+                            <p class="text-xs text-slate-600 mt-0.5">Cần bổ sung 2 Phuy Nấm Lá + 50KG Phân Hữu Cơ Nở để bảo vệ cơi đọt.</p>
+                            <div class="flex justify-between items-center mt-2">
+                                <span class="text-[11px] text-slate-400">Tác giả: <strong>KTV Minh (KTV)</strong></span>
+                                <span class="text-xs font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded">⏳ Chờ duyệt đơn</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Audit Logs -->
+                <section id="audit-log" class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+                    <div class="flex justify-between items-center mb-4 pb-2 border-b">
+                        <h2 class="font-bold text-slate-800 flex items-center space-x-2">
+                            <i class="fa-solid fa-list-check text-rose-500"></i>
+                            <span>LỊCH SỬ THAO TÁC & AUDIT LOGS</span>
+                        </h2>
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">Ghi nhận liên tục</span>
+                    </div>
+
+                    <div class="space-y-3 max-h-[350px] overflow-y-auto pr-1">
+                        <div class="p-3 rounded-lg bg-slate-900 text-white font-mono text-xs">
+                            <div class="flex justify-between text-emerald-400 font-bold">
+                                <span>Admin System (admin)</span>
+                                <span class="text-slate-400 font-normal">16/08/2026 07:00</span>
+                            </div>
+                            <p class="text-amber-300 font-semibold mt-1">Khởi tạo hệ thống</p>
+                            <p class="text-slate-300 text-[11px]">Tạo cơ sở dữ liệu Supabase & thiết lập RLS</p>
+                        </div>
+
+                        <div class="p-3 rounded-lg bg-slate-900 text-white font-mono text-xs">
+                            <div class="flex justify-between text-emerald-400 font-bold">
+                                <span>Anh Sáu (farmer)</span>
+                                <span class="text-slate-400 font-normal">16/08/2026 08:15</span>
+                            </div>
+                            <p class="text-sky-300 font-semibold mt-1">Đăng nhập App</p>
+                            <p class="text-slate-300 text-[11px]">Thiết bị Mobile iPhone 15 Pro</p>
+                        </div>
+
+                        <div class="p-3 rounded-lg bg-slate-900 text-white font-mono text-xs">
+                            <div class="flex justify-between text-emerald-400 font-bold">
+                                <span>Admin Dashboard (admin)</span>
+                                <span class="text-slate-400 font-normal">16/08/2026 08:30</span>
+                            </div>
+                            <p class="text-purple-300 font-semibold mt-1">Gắn Kỹ thuật viên</p>
+                            <p class="text-slate-300 text-[11px]">Gắn KTV Minh vào Vườn Sầu Riêng - Lô A1 (Tự động KHÓA dữ liệu)</p>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+        </main>
+    </div>
+
 </body>
 </html>
-```eof
