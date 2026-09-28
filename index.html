@@ -10,33 +10,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Supabase JS Client v2 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            dark: '#031926',
-                            sidebar: '#0a2533',
-                            blue: '#1d4ed8',
-                            sky: '#0284c7',
-                            green: '#00b894',
-                            lime: '#84cc16',
-                            bg: '#f8fafc'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
 </head>
-<body class="bg-brand-bg font-sans text-slate-700 flex h-screen overflow-hidden">
+<body class="bg-slate-50 font-sans text-slate-700 flex h-screen overflow-hidden">
 
     <!-- SIDEBAR BÊN TRÁI -->
-    <aside class="w-64 bg-brand-sidebar text-white flex flex-col justify-between shrink-0 shadow-xl border-r border-slate-800">
+    <aside class="w-64 bg-slate-900 text-white flex flex-col justify-between shrink-0 shadow-xl border-r border-slate-800 z-10">
         <div>
             <!-- Header Logo -->
-            <div class="p-4 bg-brand-dark flex items-center space-x-3 border-b border-slate-800">
+            <div class="p-4 bg-slate-950 flex items-center space-x-3 border-b border-slate-800">
                 <div class="w-9 h-9 bg-gradient-to-tr from-emerald-500 to-lime-400 rounded-lg flex items-center justify-center text-slate-900 font-extrabold text-xl shadow">
                     <i class="fa-solid fa-leaf"></i>
                 </div>
@@ -48,23 +29,23 @@
 
             <!-- Navigation Menu -->
             <nav class="p-3 space-y-1 text-sm font-semibold">
-                <button onclick="switchTab('tab-tongquan')" id="btn-tongquan" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg bg-blue-600 text-white shadow font-bold cursor-pointer">
+                <button id="btn-tongquan" onclick="switchTab('tab-tongquan')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg bg-blue-600 text-white shadow font-bold cursor-pointer">
                     <i class="fa-solid fa-chart-pie w-5 text-lime-300"></i>
                     <span>Tổng Quan</span>
                 </button>
-                <button onclick="switchTab('tab-kienthuc')" id="btn-kienthuc" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition cursor-pointer">
+                <button id="btn-kienthuc" onclick="switchTab('tab-kienthuc')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition cursor-pointer">
                     <i class="fa-solid fa-coins w-5 text-amber-400"></i>
                     <span>Giá Cả Thị Trường</span>
                 </button>
-                <button onclick="switchTab('tab-muasam')" id="btn-muasam" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition cursor-pointer">
+                <button id="btn-muasam" onclick="switchTab('tab-muasam')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition cursor-pointer">
                     <i class="fa-solid fa-bag-shopping w-5 text-emerald-400"></i>
                     <span>Vật Tư & Sản Phẩm</span>
                 </button>
-                <button onclick="switchTab('tab-vuon')" id="btn-vuon" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition cursor-pointer">
+                <button id="btn-vuon" onclick="switchTab('tab-vuon')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition cursor-pointer">
                     <i class="fa-solid fa-tree w-5 text-lime-400"></i>
                     <span>Quản Lý Vườn</span>
                 </button>
-                <button onclick="switchTab('tab-nhatky')" id="btn-nhatky" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition cursor-pointer">
+                <button id="btn-nhatky" onclick="switchTab('tab-nhatky')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition cursor-pointer">
                     <i class="fa-solid fa-book-bookmark w-5 text-purple-400"></i>
                     <span>Nhật Ký Vườn</span>
                 </button>
@@ -83,7 +64,7 @@
     <!-- MAIN CONTENT -->
     <div class="flex-1 flex flex-col h-screen overflow-hidden">
         <!-- Top Bar -->
-        <header class="bg-white border-b px-6 py-3.5 flex justify-between items-center shrink-0 shadow-sm">
+        <header class="bg-white border-b px-6 py-3.5 flex justify-between items-center shrink-0 shadow-sm z-10">
             <div class="flex items-center space-x-3">
                 <span class="text-xs bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-extrabold">Web Dashboard (Admin Portal)</span>
                 <span class="text-xs bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-bold border border-emerald-300">Live Supabase Sync</span>
@@ -95,7 +76,7 @@
         </header>
 
         <!-- Body Content -->
-        <main class="flex-1 overflow-y-auto p-6 space-y-6">
+        <main class="flex-1 overflow-y-auto p-6 space-y-6 relative">
 
             <!-- TAB 1: TỔNG QUAN -->
             <div id="tab-tongquan" class="tab-content space-y-6">
@@ -155,7 +136,7 @@
                             <h3 class="font-black text-slate-800 text-lg">Cập Nhật Giá Nông Sản Thị Trường</h3>
                             <p class="text-xs text-slate-500 font-bold">Thay đổi giá ở đây sẽ hiển thị ngay tại Trang chủ App Mobile</p>
                         </div>
-                        <button onclick="updateMarketPrices()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-black shadow-lg hover:bg-blue-700 transition flex items-center space-x-2 cursor-pointer">
+                        <button id="btn-update-prices" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-black shadow-lg hover:bg-blue-700 transition flex items-center space-x-2 cursor-pointer">
                             <i class="fa-solid fa-floppy-disk"></i>
                             <span>Cập Nhật Ngay</span>
                         </button>
@@ -186,7 +167,7 @@
                             <h3 class="font-black text-slate-800 text-lg">Quản Lý Sản Phẩm Mua Sắm Trên App</h3>
                             <p class="text-xs text-slate-500 font-bold">Thêm hoặc xóa phân bón, thuốc bảo vệ thực vật cho nông dân đặt hàng</p>
                         </div>
-                        <button onclick="addNewProduct()" class="px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-black shadow-lg hover:bg-emerald-700 transition flex items-center space-x-1 cursor-pointer">
+                        <button id="btn-add-product" class="px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-black shadow-lg hover:bg-emerald-700 transition flex items-center space-x-1 cursor-pointer">
                             <i class="fa-solid fa-plus mr-1"></i>Thêm Sản Phẩm Mới
                         </button>
                     </div>
@@ -204,7 +185,7 @@
                                 </tr>
                             </thead>
                             <tbody id="product-table-body" class="divide-y text-slate-700 font-semibold">
-                                <!-- Dữ liệu sản phẩm sẽ được tự động nạp từ Supabase -->
+                                <!-- Dữ liệu sản phẩm -->
                             </tbody>
                         </table>
                     </div>
@@ -219,7 +200,7 @@
                             <h3 class="font-black text-slate-800 text-lg">Danh Sách Vườn & Phân Công Kỹ Thuật Viên</h3>
                             <p class="text-xs text-slate-500 font-bold">Khóa dữ liệu vườn khi KTV phụ trách tiếp nhận kiểm tra</p>
                         </div>
-                        <button onclick="addNewGarden()" class="px-4 py-2.5 bg-lime-600 text-white rounded-xl text-xs font-black shadow-lg hover:bg-lime-700 transition flex items-center space-x-1 cursor-pointer">
+                        <button id="btn-add-garden" class="px-4 py-2.5 bg-lime-600 text-white rounded-xl text-xs font-black shadow-lg hover:bg-lime-700 transition flex items-center space-x-1 cursor-pointer">
                             <i class="fa-solid fa-plus mr-1"></i>Thêm Vườn Mới
                         </button>
                     </div>
@@ -237,7 +218,7 @@
                                 </tr>
                             </thead>
                             <tbody id="garden-table-body" class="divide-y text-slate-700 font-semibold">
-                                <!-- Dữ liệu vườn được tự động nạp từ Supabase -->
+                                <!-- Dữ liệu vườn -->
                             </tbody>
                         </table>
                     </div>
@@ -264,7 +245,7 @@
                                 </tr>
                             </thead>
                             <tbody id="diary-table-body" class="divide-y text-slate-700 font-semibold">
-                                <!-- Dữ liệu nhật ký nạp từ Supabase -->
+                                <!-- Dữ liệu nhật ký -->
                             </tbody>
                         </table>
                     </div>
@@ -274,62 +255,45 @@
         </main>
     </div>
 
-    <!-- SUPABASE REALTIME SCRIPT SAFE WRAPPER -->
+    <!-- SCRIPT CHÍNH VỚI EVENT LISTENERS THẦN TỐC -->
     <script>
-        window.switchTab = function(tabId) {
-            try {
-                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
-                const targetTab = document.getElementById(tabId);
-                if (targetTab) targetTab.classList.remove('hidden');
+        // 1. Hàm Chuyển Tab Độc Lập hoàn toàn
+        function switchTab(tabId) {
+            console.log("Switching to tab:", tabId);
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(el => el.classList.add('hidden'));
 
-                document.querySelectorAll('.nav-btn').forEach(btn => {
-                    btn.className = 'nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition cursor-pointer';
-                });
-                const activeBtn = document.getElementById('btn-' + tabId.replace('tab-', ''));
-                if (activeBtn) {
-                    activeBtn.className = 'nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg bg-blue-600 text-white shadow font-bold cursor-pointer';
-                }
-            } catch (err) {
-                console.error("Lỗi chuyển tab:", err);
-            }
-        };
-
-        const SUPABASE_URL = 'https://vfrrpdpuswbkbtevliiu.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_jyvoR75vgyfwuzO1TRB7uA_voyEOtXP';
-        
-        let supabase = null;
-
-        function initSupabase() {
-            try {
-                if (window.supabase && typeof window.supabase.createClient === 'function') {
-                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                    console.log("Supabase initialized successfully");
-                }
-            } catch (e) {
-                console.error("Supabase init error:", e);
+            const selectedTab = document.getElementById(tabId);
+            if (selectedTab) {
+                selectedTab.classList.remove('hidden');
             }
 
-            fetchMarketPrices();
-            fetchProducts();
-            fetchGardens();
-            fetchDiaries();
+            const navBtns = document.querySelectorAll('.nav-btn');
+            navBtns.forEach(btn => {
+                btn.className = 'nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition cursor-pointer';
+            });
 
-            if (supabase) {
-                try {
-                    supabase.channel('public-tables')
-                        .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, fetchProducts)
-                        .on('postgres_changes', { event: '*', schema: 'public', table: 'gardens' }, fetchGardens)
-                        .on('postgres_changes', { event: '*', schema: 'public', table: 'diaries' }, fetchDiaries)
-                        .on('postgres_changes', { event: '*', schema: 'public', table: 'market_prices' }, fetchMarketPrices)
-                        .subscribe();
-                } catch(e) { console.error("Realtime error:", e); }
+            const currentBtnId = 'btn-' + tabId.replace('tab-', '');
+            const currentBtn = document.getElementById(currentBtnId);
+            if (currentBtn) {
+                currentBtn.className = 'nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg bg-blue-600 text-white shadow font-bold cursor-pointer';
             }
         }
 
+        // 2. Supabase SDK Client
+        const SUPABASE_URL = 'https://vfrrpdpuswbkbtevliiu.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_jyvoR75vgyfwuzO1TRB7uA_voyEOtXP';
+        let supabaseClient = null;
+
+        if (window.supabase && typeof window.supabase.createClient === 'function') {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+
+        // Tải dữ liệu Giá
         async function fetchMarketPrices() {
-            if (!supabase) return;
+            if (!supabaseClient) return;
             try {
-                const { data } = await supabase.from('market_prices').select('*').order('id', { ascending: false }).limit(1);
+                const { data } = await supabaseClient.from('market_prices').select('*').order('id', { ascending: false }).limit(1);
                 if (data && data.length > 0) {
                     const item = data[0];
                     if (document.getElementById('price-caphe')) document.getElementById('price-caphe').value = item.caphe || '118.500đ';
@@ -337,24 +301,14 @@
                     if (document.getElementById('price-vang')) document.getElementById('price-vang').value = item.vang || '8.450.000đ';
                     if (document.getElementById('stat-caphe-price')) document.getElementById('stat-caphe-price').innerText = item.caphe || '118.500đ';
                 }
-            } catch(e) {}
+            } catch(e) { console.error(e); }
         }
 
-        window.updateMarketPrices = async function() {
-            if (!supabase) return alert("Chưa kết nối được Supabase!");
-            const caphe = document.getElementById('price-caphe').value;
-            const hotieu = document.getElementById('price-hotieu').value;
-            const vang = document.getElementById('price-vang').value;
-
-            const { error } = await supabase.from('market_prices').insert([{ caphe, hotieu, vang }]);
-            if (error) alert('Lỗi: ' + error.message);
-            else alert('✅ Đã cập nhật giá mới thành công lên App Mobile!');
-        };
-
+        // Tải danh sách Sản phẩm
         async function fetchProducts() {
-            if (!supabase) return;
+            if (!supabaseClient) return;
             try {
-                const { data: products } = await supabase.from('products').select('*').order('id', { ascending: true });
+                const { data: products } = await supabaseClient.from('products').select('*').order('id', { ascending: true });
                 if (!products) return;
 
                 if (document.getElementById('stat-products-count')) document.getElementById('stat-products-count').innerText = products.length;
@@ -368,38 +322,19 @@
                             <td class="p-3.5">${p.dosage || 'Theo bao bì'}</td>
                             <td class="p-3.5 font-black text-emerald-600">${Number(p.price).toLocaleString('vi-VN')}đ</td>
                             <td class="p-3.5 text-right">
-                                <button onclick="deleteProduct(${p.id})" class="text-red-500 hover:text-red-700 text-xs font-bold cursor-pointer"><i class="fa-solid fa-trash mr-1"></i>Xóa</button>
+                                <button onclick="deleteProductItem(${p.id})" class="text-red-500 hover:text-red-700 text-xs font-bold cursor-pointer"><i class="fa-solid fa-trash mr-1"></i>Xóa</button>
                             </td>
                         </tr>
                     `).join('');
                 }
-            } catch(e) {}
+            } catch(e) { console.error(e); }
         }
 
-        window.addNewProduct = async function() {
-            if (!supabase) return alert("Chưa kết nối được Supabase!");
-            const name = prompt("Nhập tên sản phẩm mới:");
-            if (!name) return;
-            const category = prompt("Danh mục (Ví dụ: Phân Bón, Thuốc BVTV):", "Phân Bón");
-            const tag = prompt("Thẻ Tag (Ví dụ: Khuyến Mãi, Hàng Mới, Uy Tín):", "Khuyến Mãi");
-            const price = prompt("Đơn giá (Số):", "85000");
-
-            await supabase.from('products').insert([{ name, category, tag, price: parseInt(price), dosage: '1 kg' }]);
-            fetchProducts();
-        };
-
-        window.deleteProduct = async function(id) {
-            if (!supabase) return;
-            if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
-                await supabase.from('products').delete().eq('id', id);
-                fetchProducts();
-            }
-        };
-
+        // Tải danh sách Vườn
         async function fetchGardens() {
-            if (!supabase) return;
+            if (!supabaseClient) return;
             try {
-                const { data: gardens } = await supabase.from('gardens').select('*').order('id', { ascending: true });
+                const { data: gardens } = await supabaseClient.from('gardens').select('*').order('id', { ascending: true });
                 if (!gardens) return;
 
                 if (document.getElementById('stat-gardens-count')) document.getElementById('stat-gardens-count').innerText = gardens.length;
@@ -417,35 +352,21 @@
                                     : '<span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-md">🔓 MỞ KHÓA</span>'}
                             </td>
                             <td class="p-3.5 text-right">
-                                <button onclick="toggleGardenLock(${g.id}, ${!g.is_locked})" class="px-3 py-1 text-xs font-bold border rounded-lg hover:bg-slate-100 cursor-pointer">
+                                <button onclick="toggleGardenLockItem(${g.id}, ${!g.is_locked})" class="px-3 py-1 text-xs font-bold border rounded-lg hover:bg-slate-100 cursor-pointer">
                                     ${g.is_locked ? 'Mở Khóa' : 'Khóa Dữ Liệu'}
                                 </button>
                             </td>
                         </tr>
                     `).join('');
                 }
-            } catch(e) {}
+            } catch(e) { console.error(e); }
         }
 
-        window.toggleGardenLock = async function(id, status) {
-            if (!supabase) return;
-            await supabase.from('gardens').update({ is_locked: status }).eq('id', id);
-            fetchGardens();
-        };
-
-        window.addNewGarden = async function() {
-            if (!supabase) return alert("Chưa kết nối được Supabase!");
-            const name = prompt("Nhập tên vườn:");
-            if (!name) return;
-            const crop = prompt("Loại cây trồng (SẦU RIÊNG, CÀ PHÊ...):", "SẦU RIÊNG");
-            await supabase.from('gardens').insert([{ name, crop, area: '1.0 Hécta', tree_count: 150 }]);
-            fetchGardens();
-        };
-
+        // Tải danh sách Nhật ký
         async function fetchDiaries() {
-            if (!supabase) return;
+            if (!supabaseClient) return;
             try {
-                const { data: diaries } = await supabase.from('diaries').select('*').order('id', { ascending: false });
+                const { data: diaries } = await supabaseClient.from('diaries').select('*').order('id', { ascending: false });
                 if (!diaries) return;
 
                 if (document.getElementById('stat-diaries-count')) document.getElementById('stat-diaries-count').innerText = diaries.length;
@@ -461,10 +382,89 @@
                         </tr>
                     `).join('');
                 }
-            } catch(e) {}
+            } catch(e) { console.error(e); }
         }
 
-        document.addEventListener('DOMContentLoaded', initSupabase);
+        // Các hàm thao tác nút bấm
+        async function deleteProductItem(id) {
+            if (!supabaseClient) return;
+            if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
+                await supabaseClient.from('products').delete().eq('id', id);
+                fetchProducts();
+            }
+        }
+
+        async function toggleGardenLockItem(id, status) {
+            if (!supabaseClient) return;
+            await supabaseClient.from('gardens').update({ is_locked: status }).eq('id', id);
+            fetchGardens();
+        }
+
+        // Gắn Event Listeners sau khi trang load xong
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM loaded, initializing App...");
+            
+            fetchMarketPrices();
+            fetchProducts();
+            fetchGardens();
+            fetchDiaries();
+
+            // Nút cập nhật giá
+            const btnUpdatePrices = document.getElementById('btn-update-prices');
+            if (btnUpdatePrices) {
+                btnUpdatePrices.addEventListener('click', async () => {
+                    if (!supabaseClient) return alert("Chưa kết nối Supabase!");
+                    const caphe = document.getElementById('price-caphe').value;
+                    const hotieu = document.getElementById('price-hotieu').value;
+                    const vang = document.getElementById('price-vang').value;
+
+                    const { error } = await supabaseClient.from('market_prices').insert([{ caphe, hotieu, vang }]);
+                    if (error) alert('Lỗi: ' + error.message);
+                    else alert('✅ Đã cập nhật giá mới thành công lên App Mobile!');
+                });
+            }
+
+            // Nút thêm sản phẩm
+            const btnAddProduct = document.getElementById('btn-add-product');
+            if (btnAddProduct) {
+                btnAddProduct.addEventListener('click', async () => {
+                    if (!supabaseClient) return alert("Chưa kết nối Supabase!");
+                    const name = prompt("Nhập tên sản phẩm mới:");
+                    if (!name) return;
+                    const category = prompt("Danh mục (Ví dụ: Phân Bón, Thuốc BVTV):", "Phân Bón");
+                    const tag = prompt("Thẻ Tag (Ví dụ: Khuyến Mãi, Hàng Mới, Uy Tín):", "Khuyến Mãi");
+                    const price = prompt("Đơn giá (Số):", "85000");
+
+                    await supabaseClient.from('products').insert([{ name, category, tag, price: parseInt(price), dosage: '1 kg' }]);
+                    fetchProducts();
+                });
+            }
+
+            // Nút thêm vườn
+            const btnAddGarden = document.getElementById('btn-add-garden');
+            if (btnAddGarden) {
+                btnAddGarden.addEventListener('click', async () => {
+                    if (!supabaseClient) return alert("Chưa kết nối Supabase!");
+                    const name = prompt("Nhập tên vườn:");
+                    if (!name) return;
+                    const crop = prompt("Loại cây trồng (SẦU RIÊNG, CÀ PHÊ...):", "SẦU RIÊNG");
+                    await supabaseClient.from('gardens').insert([{ name, crop, area: '1.0 Hécta', tree_count: 150 }]);
+                    fetchGardens();
+                });
+            }
+
+            // Subscriptions Realtime
+            if (supabaseClient) {
+                try {
+                    supabaseClient.channel('public-changes')
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, fetchProducts)
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'gardens' }, fetchGardens)
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'diaries' }, fetchDiaries)
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'market_prices' }, fetchMarketPrices)
+                        .subscribe();
+                } catch(e) {}
+            }
+        });
     </script>
 </body>
 </html>
