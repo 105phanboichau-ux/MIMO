@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AGRIFIELD - Web Dashboard Quản Trị Hệ Thống</title>
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -48,23 +48,23 @@
 
             <!-- Navigation Menu -->
             <nav class="p-3 space-y-1 text-sm font-semibold">
-                <button onclick="switchTab('tab-tongquan')" id="btn-tongquan" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg bg-blue-600 text-white shadow font-bold">
+                <button onclick="switchTab('tab-tongquan')" id="btn-tongquan" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg bg-blue-600 text-white shadow font-bold cursor-pointer">
                     <i class="fa-solid fa-chart-pie w-5 text-lime-300"></i>
                     <span>Tổng Quan</span>
                 </button>
-                <button onclick="switchTab('tab-kienthuc')" id="btn-kienthuc" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                <button onclick="switchTab('tab-kienthuc')" id="btn-kienthuc" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition cursor-pointer">
                     <i class="fa-solid fa-coins w-5 text-amber-400"></i>
                     <span>Giá Cả Thị Trường</span>
                 </button>
-                <button onclick="switchTab('tab-muasam')" id="btn-muasam" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                <button onclick="switchTab('tab-muasam')" id="btn-muasam" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition cursor-pointer">
                     <i class="fa-solid fa-bag-shopping w-5 text-emerald-400"></i>
                     <span>Vật Tư & Sản Phẩm</span>
                 </button>
-                <button onclick="switchTab('tab-vuon')" id="btn-vuon" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                <button onclick="switchTab('tab-vuon')" id="btn-vuon" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition cursor-pointer">
                     <i class="fa-solid fa-tree w-5 text-lime-400"></i>
                     <span>Quản Lý Vườn</span>
                 </button>
-                <button onclick="switchTab('tab-nhatky')" id="btn-nhatky" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                <button onclick="switchTab('tab-nhatky')" id="btn-nhatky" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition cursor-pointer">
                     <i class="fa-solid fa-book-bookmark w-5 text-purple-400"></i>
                     <span>Nhật Ký Vườn</span>
                 </button>
@@ -155,7 +155,7 @@
                             <h3 class="font-black text-slate-800 text-lg">Cập Nhật Giá Nông Sản Thị Trường</h3>
                             <p class="text-xs text-slate-500 font-bold">Thay đổi giá ở đây sẽ hiển thị ngay tại Trang chủ App Mobile</p>
                         </div>
-                        <button onclick="updateMarketPrices()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-black shadow-lg hover:bg-blue-700 transition flex items-center space-x-2">
+                        <button onclick="updateMarketPrices()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-black shadow-lg hover:bg-blue-700 transition flex items-center space-x-2 cursor-pointer">
                             <i class="fa-solid fa-floppy-disk"></i>
                             <span>Cập Nhật Ngay</span>
                         </button>
@@ -186,7 +186,7 @@
                             <h3 class="font-black text-slate-800 text-lg">Quản Lý Sản Phẩm Mua Sắm Trên App</h3>
                             <p class="text-xs text-slate-500 font-bold">Thêm hoặc xóa phân bón, thuốc bảo vệ thực vật cho nông dân đặt hàng</p>
                         </div>
-                        <button onclick="addNewProduct()" class="px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-black shadow-lg hover:bg-emerald-700 transition flex items-center space-x-1">
+                        <button onclick="addNewProduct()" class="px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-black shadow-lg hover:bg-emerald-700 transition flex items-center space-x-1 cursor-pointer">
                             <i class="fa-solid fa-plus mr-1"></i>Thêm Sản Phẩm Mới
                         </button>
                     </div>
@@ -219,7 +219,7 @@
                             <h3 class="font-black text-slate-800 text-lg">Danh Sách Vườn & Phân Công Kỹ Thuật Viên</h3>
                             <p class="text-xs text-slate-500 font-bold">Khóa dữ liệu vườn khi KTV phụ trách tiếp nhận kiểm tra</p>
                         </div>
-                        <button onclick="addNewGarden()" class="px-4 py-2.5 bg-lime-600 text-white rounded-xl text-xs font-black shadow-lg hover:bg-lime-700 transition flex items-center space-x-1">
+                        <button onclick="addNewGarden()" class="px-4 py-2.5 bg-lime-600 text-white rounded-xl text-xs font-black shadow-lg hover:bg-lime-700 transition flex items-center space-x-1 cursor-pointer">
                             <i class="fa-solid fa-plus mr-1"></i>Thêm Vườn Mới
                         </button>
                     </div>
@@ -274,40 +274,74 @@
         </main>
     </div>
 
-    <!-- SUPABASE REALTIME SCRIPT -->
+    <!-- SUPABASE REALTIME SCRIPT SAFE WRAPPER -->
     <script>
+        window.switchTab = function(tabId) {
+            try {
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+                const targetTab = document.getElementById(tabId);
+                if (targetTab) targetTab.classList.remove('hidden');
+
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.className = 'nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition cursor-pointer';
+                });
+                const activeBtn = document.getElementById('btn-' + tabId.replace('tab-', ''));
+                if (activeBtn) {
+                    activeBtn.className = 'nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg bg-blue-600 text-white shadow font-bold cursor-pointer';
+                }
+            } catch (err) {
+                console.error("Lỗi chuyển tab:", err);
+            }
+        };
+
         const SUPABASE_URL = 'https://vfrrpdpuswbkbtevliiu.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_jyvoR75vgyfwuzO1TRB7uA_voyEOtXP';
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let supabase = null;
 
-        // Chuyển Tab
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
-            document.getElementById(tabId).classList.remove('hidden');
+        function initSupabase() {
+            try {
+                if (window.supabase && typeof window.supabase.createClient === 'function') {
+                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    console.log("Supabase initialized successfully");
+                }
+            } catch (e) {
+                console.error("Supabase init error:", e);
+            }
 
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.className = 'nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition';
-            });
-            const activeBtn = document.getElementById('btn-' + tabId.replace('tab-', ''));
-            if(activeBtn) {
-                activeBtn.className = 'nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg bg-blue-600 text-white shadow font-bold';
+            fetchMarketPrices();
+            fetchProducts();
+            fetchGardens();
+            fetchDiaries();
+
+            if (supabase) {
+                try {
+                    supabase.channel('public-tables')
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, fetchProducts)
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'gardens' }, fetchGardens)
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'diaries' }, fetchDiaries)
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'market_prices' }, fetchMarketPrices)
+                        .subscribe();
+                } catch(e) { console.error("Realtime error:", e); }
             }
         }
 
-        // Tải & Cập nhật Giá thị trường
         async function fetchMarketPrices() {
-            const { data } = await supabase.from('market_prices').select('*').order('id', { ascending: false }).limit(1);
-            if (data && data.length > 0) {
-                const item = data[0];
-                document.getElementById('price-caphe').value = item.caphe || '118.500đ';
-                document.getElementById('price-hotieu').value = item.hotieu || '145.000đ';
-                document.getElementById('price-vang').value = item.vang || '8.450.000đ';
-                document.getElementById('stat-caphe-price').innerText = item.caphe || '118.500đ';
-            }
+            if (!supabase) return;
+            try {
+                const { data } = await supabase.from('market_prices').select('*').order('id', { ascending: false }).limit(1);
+                if (data && data.length > 0) {
+                    const item = data[0];
+                    if (document.getElementById('price-caphe')) document.getElementById('price-caphe').value = item.caphe || '118.500đ';
+                    if (document.getElementById('price-hotieu')) document.getElementById('price-hotieu').value = item.hotieu || '145.000đ';
+                    if (document.getElementById('price-vang')) document.getElementById('price-vang').value = item.vang || '8.450.000đ';
+                    if (document.getElementById('stat-caphe-price')) document.getElementById('stat-caphe-price').innerText = item.caphe || '118.500đ';
+                }
+            } catch(e) {}
         }
 
-        async function updateMarketPrices() {
+        window.updateMarketPrices = async function() {
+            if (!supabase) return alert("Chưa kết nối được Supabase!");
             const caphe = document.getElementById('price-caphe').value;
             const hotieu = document.getElementById('price-hotieu').value;
             const vang = document.getElementById('price-vang').value;
@@ -315,30 +349,35 @@
             const { error } = await supabase.from('market_prices').insert([{ caphe, hotieu, vang }]);
             if (error) alert('Lỗi: ' + error.message);
             else alert('✅ Đã cập nhật giá mới thành công lên App Mobile!');
-        }
+        };
 
-        // Tải danh sách Sản phẩm Mua sắm
         async function fetchProducts() {
-            const { data: products } = await supabase.from('products').select('*').order('id', { ascending: true });
-            if (!products) return;
+            if (!supabase) return;
+            try {
+                const { data: products } = await supabase.from('products').select('*').order('id', { ascending: true });
+                if (!products) return;
 
-            document.getElementById('stat-products-count').innerText = products.length;
-            const tbody = document.getElementById('product-table-body');
-            tbody.innerHTML = products.map(p => `
-                <tr>
-                    <td class="p-3.5 font-bold">${p.name}</td>
-                    <td class="p-3.5"><span class="bg-orange-100 text-orange-800 text-xs px-2.5 py-1 rounded-md font-bold">${p.category || 'Vật Tư'}</span></td>
-                    <td class="p-3.5"><span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-md font-bold">${p.tag || 'Chính Hãng'}</span></td>
-                    <td class="p-3.5">${p.dosage || 'Theo bao bì'}</td>
-                    <td class="p-3.5 font-black text-emerald-600">${Number(p.price).toLocaleString('vi-VN')}đ</td>
-                    <td class="p-3.5 text-right">
-                        <button onclick="deleteProduct(${p.id})" class="text-red-500 hover:text-red-700 text-xs font-bold"><i class="fa-solid fa-trash mr-1"></i>Xóa</button>
-                    </td>
-                </tr>
-            `).join('');
+                if (document.getElementById('stat-products-count')) document.getElementById('stat-products-count').innerText = products.length;
+                const tbody = document.getElementById('product-table-body');
+                if (tbody) {
+                    tbody.innerHTML = products.map(p => `
+                        <tr>
+                            <td class="p-3.5 font-bold">${p.name}</td>
+                            <td class="p-3.5"><span class="bg-orange-100 text-orange-800 text-xs px-2.5 py-1 rounded-md font-bold">${p.category || 'Vật Tư'}</span></td>
+                            <td class="p-3.5"><span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-md font-bold">${p.tag || 'Chính Hãng'}</span></td>
+                            <td class="p-3.5">${p.dosage || 'Theo bao bì'}</td>
+                            <td class="p-3.5 font-black text-emerald-600">${Number(p.price).toLocaleString('vi-VN')}đ</td>
+                            <td class="p-3.5 text-right">
+                                <button onclick="deleteProduct(${p.id})" class="text-red-500 hover:text-red-700 text-xs font-bold cursor-pointer"><i class="fa-solid fa-trash mr-1"></i>Xóa</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch(e) {}
         }
 
-        async function addNewProduct() {
+        window.addNewProduct = async function() {
+            if (!supabase) return alert("Chưa kết nối được Supabase!");
             const name = prompt("Nhập tên sản phẩm mới:");
             if (!name) return;
             const category = prompt("Danh mục (Ví dụ: Phân Bón, Thuốc BVTV):", "Phân Bón");
@@ -347,90 +386,85 @@
 
             await supabase.from('products').insert([{ name, category, tag, price: parseInt(price), dosage: '1 kg' }]);
             fetchProducts();
-        }
+        };
 
-        async function deleteProduct(id) {
+        window.deleteProduct = async function(id) {
+            if (!supabase) return;
             if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
                 await supabase.from('products').delete().eq('id', id);
                 fetchProducts();
             }
-        }
+        };
 
-        // Tải danh sách Vườn
         async function fetchGardens() {
-            const { data: gardens } = await supabase.from('gardens').select('*').order('id', { ascending: true });
-            if (!gardens) return;
+            if (!supabase) return;
+            try {
+                const { data: gardens } = await supabase.from('gardens').select('*').order('id', { ascending: true });
+                if (!gardens) return;
 
-            document.getElementById('stat-gardens-count').innerText = gardens.length;
-            const tbody = document.getElementById('garden-table-body');
-            tbody.innerHTML = gardens.map(g => `
-                <tr>
-                    <td class="p-3.5 font-bold text-slate-800">${g.name} <span class="block text-xs font-normal text-slate-400">${g.crop}</span></td>
-                    <td class="p-3.5">${g.area} • ${g.tree_count} Cây</td>
-                    <td class="p-3.5 font-semibold">${g.farmer_name || 'Anh Sáu'}</td>
-                    <td class="p-3.5"><span class="text-xs bg-purple-100 text-purple-800 font-bold px-2 py-0.5 rounded">${g.ktv_assigned || 'Chưa gắn'}</span></td>
-                    <td class="p-3.5">
-                        ${g.is_locked 
-                            ? '<span class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-md">🔒 ĐÃ KHÓA</span>' 
-                            : '<span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-md">🔓 MỞ KHÓA</span>'}
-                    </td>
-                    <td class="p-3.5 text-right">
-                        <button onclick="toggleGardenLock(${g.id}, ${!g.is_locked})" class="px-3 py-1 text-xs font-bold border rounded-lg hover:bg-slate-100">
-                            ${g.is_locked ? 'Mở Khóa' : 'Khóa Dữ Liệu'}
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+                if (document.getElementById('stat-gardens-count')) document.getElementById('stat-gardens-count').innerText = gardens.length;
+                const tbody = document.getElementById('garden-table-body');
+                if (tbody) {
+                    tbody.innerHTML = gardens.map(g => `
+                        <tr>
+                            <td class="p-3.5 font-bold text-slate-800">${g.name} <span class="block text-xs font-normal text-slate-400">${g.crop}</span></td>
+                            <td class="p-3.5">${g.area} • ${g.tree_count} Cây</td>
+                            <td class="p-3.5 font-semibold">${g.farmer_name || 'Anh Sáu'}</td>
+                            <td class="p-3.5"><span class="text-xs bg-purple-100 text-purple-800 font-bold px-2 py-0.5 rounded">${g.ktv_assigned || 'Chưa gắn'}</span></td>
+                            <td class="p-3.5">
+                                ${g.is_locked 
+                                    ? '<span class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-md">🔒 ĐÃ KHÓA</span>' 
+                                    : '<span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-md">🔓 MỞ KHÓA</span>'}
+                            </td>
+                            <td class="p-3.5 text-right">
+                                <button onclick="toggleGardenLock(${g.id}, ${!g.is_locked})" class="px-3 py-1 text-xs font-bold border rounded-lg hover:bg-slate-100 cursor-pointer">
+                                    ${g.is_locked ? 'Mở Khóa' : 'Khóa Dữ Liệu'}
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch(e) {}
         }
 
-        async function toggleGardenLock(id, status) {
+        window.toggleGardenLock = async function(id, status) {
+            if (!supabase) return;
             await supabase.from('gardens').update({ is_locked: status }).eq('id', id);
             fetchGardens();
-        }
+        };
 
-        async function addNewGarden() {
+        window.addNewGarden = async function() {
+            if (!supabase) return alert("Chưa kết nối được Supabase!");
             const name = prompt("Nhập tên vườn:");
             if (!name) return;
             const crop = prompt("Loại cây trồng (SẦU RIÊNG, CÀ PHÊ...):", "SẦU RIÊNG");
             await supabase.from('gardens').insert([{ name, crop, area: '1.0 Hécta', tree_count: 150 }]);
             fetchGardens();
-        }
+        };
 
-        // Tải danh sách Nhật ký Vườn
         async function fetchDiaries() {
-            const { data: diaries } = await supabase.from('diaries').select('*').order('id', { ascending: false });
-            if (!diaries) return;
+            if (!supabase) return;
+            try {
+                const { data: diaries } = await supabase.from('diaries').select('*').order('id', { ascending: false });
+                if (!diaries) return;
 
-            document.getElementById('stat-diaries-count').innerText = diaries.length;
-            const tbody = document.getElementById('diary-table-body');
-            tbody.innerHTML = diaries.map(d => `
-                <tr>
-                    <td class="p-3.5 text-xs font-bold text-blue-600">${d.activity_date || 'Hôm nay'}</td>
-                    <td class="p-3.5 font-bold">${d.garden_name}</td>
-                    <td class="p-3.5 font-semibold">${d.title}</td>
-                    <td class="p-3.5"><span class="bg-sky-100 text-sky-800 text-xs px-2 py-0.5 rounded font-bold">${d.category || 'Tưới nước'}</span></td>
-                    <td class="p-3.5 font-bold text-rose-600">${Number(d.cost || 0).toLocaleString('vi-VN')}đ</td>
-                </tr>
-            `).join('');
+                if (document.getElementById('stat-diaries-count')) document.getElementById('stat-diaries-count').innerText = diaries.length;
+                const tbody = document.getElementById('diary-table-body');
+                if (tbody) {
+                    tbody.innerHTML = diaries.map(d => `
+                        <tr>
+                            <td class="p-3.5 text-xs font-bold text-blue-600">${d.activity_date || 'Hôm nay'}</td>
+                            <td class="p-3.5 font-bold">${d.garden_name}</td>
+                            <td class="p-3.5 font-semibold">${d.title}</td>
+                            <td class="p-3.5"><span class="bg-sky-100 text-sky-800 text-xs px-2 py-0.5 rounded font-bold">${d.category || 'Tưới nước'}</span></td>
+                            <td class="p-3.5 font-bold text-rose-600">${Number(d.cost || 0).toLocaleString('vi-VN')}đ</td>
+                        </tr>
+                    `).join('');
+                }
+            } catch(e) {}
         }
 
-        // Khởi tạo & Đăng ký Realtime
-        function initApp() {
-            fetchMarketPrices();
-            fetchProducts();
-            fetchGardens();
-            fetchDiaries();
-
-            // Đăng ký Supabase Realtime Channels
-            supabase.channel('public-tables')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, fetchProducts)
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'gardens' }, fetchGardens)
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'diaries' }, fetchDiaries)
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'market_prices' }, fetchMarketPrices)
-                .subscribe();
-        }
-
-        window.onload = initApp;
+        document.addEventListener('DOMContentLoaded', initSupabase);
     </script>
 </body>
 </html>
