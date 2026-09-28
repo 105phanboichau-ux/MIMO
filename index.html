@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AGRIFIELD - Web Dashboard Quản Trị</title>
-    <!-- Tailwind CSS CDN -->
+    <title>AGRIFIELD - Web Dashboard Quản Trị Hệ Thống</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Supabase JS Client v2 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -40,364 +42,395 @@
                 </div>
                 <div>
                     <h1 class="font-black tracking-wider text-lime-400 text-base leading-none">AGRIFIELD</h1>
-                    <span class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Nông Nghiệp Việt</span>
+                    <span class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Hệ Thống Quản Trị</span>
                 </div>
             </div>
 
             <!-- Navigation Menu -->
             <nav class="p-3 space-y-1 text-sm font-semibold">
-                <button onclick="switchTab('tab-tongquan')" id="btn-tongquan" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg bg-blue-600 text-white shadow">
+                <button onclick="switchTab('tab-tongquan')" id="btn-tongquan" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg bg-blue-600 text-white shadow font-bold">
                     <i class="fa-solid fa-chart-pie w-5 text-lime-300"></i>
                     <span>Tổng Quan</span>
                 </button>
                 <button onclick="switchTab('tab-kienthuc')" id="btn-kienthuc" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
-                    <i class="fa-solid fa-book-open w-5 text-amber-400"></i>
-                    <span>Kiến Thức</span>
+                    <i class="fa-solid fa-coins w-5 text-amber-400"></i>
+                    <span>Giá Cả Thị Trường</span>
                 </button>
                 <button onclick="switchTab('tab-muasam')" id="btn-muasam" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
                     <i class="fa-solid fa-bag-shopping w-5 text-emerald-400"></i>
-                    <span>Mua Sắm</span>
+                    <span>Vật Tư & Sản Phẩm</span>
                 </button>
                 <button onclick="switchTab('tab-vuon')" id="btn-vuon" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
                     <i class="fa-solid fa-tree w-5 text-lime-400"></i>
-                    <span>Vườn</span>
+                    <span>Quản Lý Vườn</span>
                 </button>
-                <button onclick="switchTab('tab-taichinh')" id="btn-taichinh" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
-                    <i class="fa-solid fa-wallet w-5 text-sky-400"></i>
-                    <span>Tài Chính</span>
-                </button>
-                <button onclick="switchTab('tab-quanly')" id="btn-quanly" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
-                    <i class="fa-solid fa-users-gear w-5 text-purple-400"></i>
-                    <span>Quản Lý (User)</span>
+                <button onclick="switchTab('tab-nhatky')" id="btn-nhatky" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                    <i class="fa-solid fa-book-bookmark w-5 text-purple-400"></i>
+                    <span>Nhật Ký Vườn</span>
                 </button>
             </nav>
         </div>
 
-        <!-- App Connection Status -->
+        <!-- Connection Status Indicator -->
         <div class="p-4 border-t border-slate-800 space-y-2 text-xs">
-            <div class="flex items-center space-x-2 text-emerald-400 bg-emerald-950/60 p-2 rounded border border-emerald-800">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span class="font-medium">Supabase Realtime Syncing</span>
+            <div id="status-badge" class="flex items-center space-x-2 text-emerald-400 bg-emerald-950/60 p-2.5 rounded-lg border border-emerald-800">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span id="sync-status-text" class="font-bold">Supabase Realtime Active</span>
             </div>
-            <button class="w-full py-2 bg-gradient-to-r from-blue-600 to-sky-500 hover:opacity-90 text-white rounded-lg font-bold flex items-center justify-center space-x-2 shadow">
-                <i class="fa-solid fa-mobile-screen-button"></i>
-                <span>Giả Lập App Mobile</span>
-            </button>
         </div>
     </aside>
 
-    <!-- KHUNG NỘI DUNG BÊN PHẢI -->
+    <!-- MAIN CONTENT -->
     <div class="flex-1 flex flex-col h-screen overflow-hidden">
-        
-        <!-- Header TopBar -->
-        <header class="bg-white border-b px-6 py-3 flex justify-between items-center shrink-0 shadow-sm">
-            <div class="flex items-center space-x-2">
-                <span class="text-xs bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-bold">Web Dashboard (Quản Trị System)</span>
-                <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full border">Supabase SQL Connected</span>
+        <!-- Top Bar -->
+        <header class="bg-white border-b px-6 py-3.5 flex justify-between items-center shrink-0 shadow-sm">
+            <div class="flex items-center space-x-3">
+                <span class="text-xs bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-extrabold">Web Dashboard (Admin Portal)</span>
+                <span class="text-xs bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-bold border border-emerald-300">Live Supabase Sync</span>
             </div>
             <div class="flex items-center space-x-3">
-                <span class="text-sm text-slate-700 font-semibold">Admin System</span>
+                <span class="text-sm text-slate-700 font-bold">Admin System</span>
                 <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow">A</div>
             </div>
         </header>
 
-        <!-- Dynamic Content Body -->
-        <main class="flex-1 overflow-y-auto p-6">
+        <!-- Body Content -->
+        <main class="flex-1 overflow-y-auto p-6 space-y-6">
 
             <!-- TAB 1: TỔNG QUAN -->
             <div id="tab-tongquan" class="tab-content space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
                         <div>
-                            <p class="text-xs font-bold text-slate-400 uppercase">TỔNG USER MOBILE</p>
-                            <h3 class="text-2xl font-bold text-slate-800 mt-1">4</h3>
-                            <p class="text-xs text-slate-500 mt-1">2 Nông dân • 2 KTV</p>
+                            <p class="text-xs font-bold text-slate-400 uppercase">SẢN PHẨM MUA SẮM</p>
+                            <h3 id="stat-products-count" class="text-3xl font-black text-slate-800 mt-1">4</h3>
+                            <p class="text-xs text-emerald-600 font-bold mt-1">Tự động đồng bộ sang App</p>
                         </div>
-                        <div class="p-3 bg-sky-50 text-sky-600 rounded-lg"><i class="fa-solid fa-users text-xl"></i></div>
+                        <div class="p-4 bg-emerald-50 text-emerald-600 rounded-2xl"><i class="fa-solid fa-bag-shopping text-2xl"></i></div>
                     </div>
-                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
+
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
                         <div>
-                            <p class="text-xs font-bold text-slate-400 uppercase">TỔNG VƯỜN ĐANG QUẢN LÝ</p>
-                            <h3 class="text-2xl font-bold text-emerald-600 mt-1">3</h3>
-                            <p class="text-xs text-slate-500 mt-1">2 Vườn đã gắn KTV</p>
+                            <p class="text-xs font-bold text-slate-400 uppercase">VƯỜN ĐANG QUẢN LÝ</p>
+                            <h3 id="stat-gardens-count" class="text-3xl font-black text-lime-600 mt-1">2</h3>
+                            <p class="text-xs text-slate-500 font-bold mt-1">Đã gắn KTV phụ trách</p>
                         </div>
-                        <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg"><i class="fa-solid fa-tree text-xl"></i></div>
+                        <div class="p-4 bg-lime-50 text-lime-600 rounded-2xl"><i class="fa-solid fa-tree text-2xl"></i></div>
                     </div>
-                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
+
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
                         <div>
-                            <p class="text-xs font-bold text-slate-400 uppercase">ĐẦU TƯ & ỨNG VẬT TƯ</p>
-                            <h3 class="text-2xl font-bold text-blue-600 mt-1">2,75 Tỷ</h3>
-                            <p class="text-xs text-slate-500 mt-1">457 Vườn ứng phân thuốc</p>
+                            <p class="text-xs font-bold text-slate-400 uppercase">NHẬT KÝ VƯỜN</p>
+                            <h3 id="stat-diaries-count" class="text-3xl font-black text-purple-600 mt-1">2</h3>
+                            <p class="text-xs text-purple-600 font-bold mt-1">Ghi nhận từ Nông dân & KTV</p>
                         </div>
-                        <div class="p-3 bg-blue-50 text-blue-600 rounded-lg"><i class="fa-solid fa-hand-holding-dollar text-xl"></i></div>
+                        <div class="p-4 bg-purple-50 text-purple-600 rounded-2xl"><i class="fa-solid fa-book-bookmark text-2xl"></i></div>
                     </div>
-                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
+
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
                         <div>
-                            <p class="text-xs font-bold text-slate-400 uppercase">NHẬT KÝ & AUDIT LOGS</p>
-                            <h3 class="text-2xl font-bold text-purple-600 mt-1">6</h3>
-                            <p class="text-xs text-slate-500 mt-1">Đồng bộ tự động từ App</p>
+                            <p class="text-xs font-bold text-slate-400 uppercase">GIÁ CÀ PHÊ HÔM NAY</p>
+                            <h3 id="stat-caphe-price" class="text-2xl font-black text-blue-600 mt-1">118.500đ</h3>
+                            <p class="text-xs text-slate-500 font-bold mt-1">Cập nhật trực tiếp App</p>
                         </div>
-                        <div class="p-3 bg-purple-50 text-purple-600 rounded-lg"><i class="fa-solid fa-rotate text-xl"></i></div>
+                        <div class="p-4 bg-blue-50 text-blue-600 rounded-2xl"><i class="fa-solid fa-coins text-2xl"></i></div>
                     </div>
                 </div>
 
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                    <h3 class="font-bold text-slate-800 mb-2">Trạng Thái Đồng Bộ Hệ Thống App Mobile</h3>
-                    <p class="text-sm text-slate-600">Mọi thay đổi thông tin sản phẩm, giá thị trường, nhật ký vườn hay phân quyền tài khoản tại Web Admin này sẽ ngay lập tức được đẩy về ứng dụng mobile <strong>AGRIFIELD</strong> của Nông dân và Kỹ thuật viên qua Supabase Realtime Database.</p>
+                <div class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white p-6 rounded-3xl shadow-lg border border-blue-600">
+                    <h3 class="text-lime-300 font-black text-lg uppercase tracking-wide flex items-center">
+                        <i class="fa-solid fa-bolt mr-2"></i>Trạng Thái Đồng Bộ Hệ Thống App Mobile
+                    </h3>
+                    <p class="text-sm text-blue-100 mt-2 leading-relaxed">
+                        Mọi thao tác cập nhật <strong>Giá nông sản</strong>, thêm <strong>Sản phẩm phân bón/thuốc BVTV</strong>, hoặc <strong>Khóa nhật ký vườn</strong> tại Dashboard này sẽ tự động đẩy ngay lập tức về điện thoại của Nông dân qua <strong>Supabase Realtime WebSocket</strong> mà không cần tải lại trang.
+                    </p>
                 </div>
             </div>
 
-            <!-- TAB 2: KIẾN THỨC NÔNG NGHIỆP & GIÁ THỊ TRƯỜNG -->
+            <!-- TAB 2: GIÁ CẢ THỊ TRƯỜNG -->
             <div id="tab-kienthuc" class="tab-content hidden space-y-6">
-                <!-- Cấu hình giá thị trường hiển thị trên App -->
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                    <div class="flex justify-between items-center mb-4">
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center border-b pb-3">
                         <div>
-                            <h3 class="font-bold text-slate-800 text-base">Cấu Hình Giá Thị Trường Hôm Nay (Đẩy Sang App)</h3>
-                            <p class="text-xs text-slate-500">Cập nhật giá cả nông sản hiển thị ở trang chủ App Mobile</p>
+                            <h3 class="font-black text-slate-800 text-lg">Cập Nhật Giá Nông Sản Thị Trường</h3>
+                            <p class="text-xs text-slate-500 font-bold">Thay đổi giá ở đây sẽ hiển thị ngay tại Trang chủ App Mobile</p>
                         </div>
-                        <button class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold shadow hover:bg-blue-700">Cập Nhật Giá</button>
+                        <button onclick="updateMarketPrices()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-black shadow-lg hover:bg-blue-700 transition flex items-center space-x-2">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>Cập Nhật Ngay</span>
+                        </button>
                     </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="p-3 border rounded-lg bg-slate-50">
-                            <label class="text-xs font-bold text-slate-500 block mb-1">CÀ PHÊ (ĐỒNG/KG)</label>
-                            <input type="text" value="118.500đ" class="w-full border px-3 py-1.5 rounded font-bold text-blue-600 bg-white">
+                        <div class="p-4 border rounded-2xl bg-slate-50 space-y-1">
+                            <label class="text-xs font-black text-slate-500 uppercase">CÀ PHÊ (ĐỒNG/KG)</label>
+                            <input id="price-caphe" type="text" value="118.500đ" class="w-full border-2 border-slate-200 px-3 py-2 rounded-xl font-black text-blue-600 bg-white focus:border-blue-500 outline-none">
                         </div>
-                        <div class="p-3 border rounded-lg bg-slate-50">
-                            <label class="text-xs font-bold text-slate-500 block mb-1">HỒ TIÊU (ĐỒNG/KG)</label>
-                            <input type="text" value="145.000đ" class="w-full border px-3 py-1.5 rounded font-bold text-blue-600 bg-white">
+                        <div class="p-4 border rounded-2xl bg-slate-50 space-y-1">
+                            <label class="text-xs font-black text-slate-500 uppercase">HỒ TIÊU (ĐỒNG/KG)</label>
+                            <input id="price-hotieu" type="text" value="145.000đ" class="w-full border-2 border-slate-200 px-3 py-2 rounded-xl font-black text-blue-600 bg-white focus:border-blue-500 outline-none">
                         </div>
-                        <div class="p-3 border rounded-lg bg-slate-50">
-                            <label class="text-xs font-bold text-slate-500 block mb-1">VÀNG SJC (ĐỒNG/LƯỢNG)</label>
-                            <input type="text" value="8.450.000đ" class="w-full border px-3 py-1.5 rounded font-bold text-blue-600 bg-white">
+                        <div class="p-4 border rounded-2xl bg-slate-50 space-y-1">
+                            <label class="text-xs font-black text-slate-500 uppercase">VÀNG SJC (ĐỒNG/LƯỢNG)</label>
+                            <input id="price-vang" type="text" value="8.450.000đ" class="w-full border-2 border-slate-200 px-3 py-2 rounded-xl font-black text-blue-600 bg-white focus:border-blue-500 outline-none">
                         </div>
-                    </div>
-                </div>
-
-                <!-- Danh mục kiến thức -->
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                    <h3 class="font-bold text-slate-800 mb-3">Quản Lý Danh Mục Kiến Thức & Cây Trồng</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <div class="p-3 bg-orange-500 text-white font-bold rounded-lg flex justify-between items-center"><span>Sầu Riêng</span><i class="fa-solid fa-pen-to-square cursor-pointer"></i></div>
-                        <div class="p-3 bg-amber-800 text-white font-bold rounded-lg flex justify-between items-center"><span>Cà Phê</span><i class="fa-solid fa-pen-to-square cursor-pointer"></i></div>
-                        <div class="p-3 bg-emerald-700 text-white font-bold rounded-lg flex justify-between items-center"><span>Hồ Tiêu</span><i class="fa-solid fa-pen-to-square cursor-pointer"></i></div>
-                        <div class="p-3 bg-amber-500 text-white font-bold rounded-lg flex justify-between items-center"><span>Lúa</span><i class="fa-solid fa-pen-to-square cursor-pointer"></i></div>
-                        <div class="p-3 bg-blue-600 text-white font-bold rounded-lg flex justify-between items-center"><span>Phân Bón</span><i class="fa-solid fa-pen-to-square cursor-pointer"></i></div>
-                        <div class="p-3 bg-fuchsia-600 text-white font-bold rounded-lg flex justify-between items-center"><span>Cây Khác</span><i class="fa-solid fa-pen-to-square cursor-pointer"></i></div>
-                        <div class="p-3 bg-cyan-600 text-white font-bold rounded-lg flex justify-between items-center"><span>Thiết Bị</span><i class="fa-solid fa-pen-to-square cursor-pointer"></i></div>
-                        <div class="p-3 bg-teal-600 text-white font-bold rounded-lg flex justify-between items-center"><span>Thủy Lợi</span><i class="fa-solid fa-pen-to-square cursor-pointer"></i></div>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 3: MUA SẮM (SẢN PHẨM MUA SẮM TRÊN APP) -->
+            <!-- TAB 3: MUA SẮM (VẬT TƯ & SẢN PHẨM) -->
             <div id="tab-muasam" class="tab-content hidden space-y-6">
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-bold text-slate-800">Quản Lý Danh Mục Vật Tư & Sản Phẩm Chính Hãng (App Mua Sắm)</h3>
-                        <button class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold shadow hover:bg-emerald-700"><i class="fa-solid fa-plus mr-1"></i>Thêm Sản Phẩm Mới</button>
-                    </div>
-                    <table class="w-full text-left text-sm border-collapse">
-                        <thead>
-                            <tr class="bg-slate-100 text-slate-600 text-xs uppercase border-b">
-                                <th class="p-3">Tên Sản Phẩm</th>
-                                <th class="p-3">Danh Mục</th>
-                                <th class="p-3">Quy Cách / Liều Dùng</th>
-                                <th class="p-3">Đơn Giá</th>
-                                <th class="p-3 text-right">Thao Tác</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y text-slate-700">
-                            <tr>
-                                <td class="p-3 font-semibold">NPK 20-20-15</td>
-                                <td class="p-3"><span class="bg-orange-100 text-orange-800 text-xs px-2 py-0.5 rounded font-bold">Phân Bón</span></td>
-                                <td class="p-3">1 kg (Pha 400 L)</td>
-                                <td class="p-3 font-bold text-emerald-600">75.000đ</td>
-                                <td class="p-3 text-right"><button class="text-blue-600 text-xs font-bold">Sửa</button></td>
-                            </tr>
-                            <tr>
-                                <td class="p-3 font-semibold">Humic Hữu Cơ</td>
-                                <td class="p-3"><span class="bg-orange-100 text-orange-800 text-xs px-2 py-0.5 rounded font-bold">Phân Bón</span></td>
-                                <td class="p-3">500 ml (Pha 200 L)</td>
-                                <td class="p-3 font-bold text-emerald-600">90.000đ</td>
-                                <td class="p-3 text-right"><button class="text-blue-600 text-xs font-bold">Sửa</button></td>
-                            </tr>
-                            <tr>
-                                <td class="p-3 font-semibold">Phân Bón Lá Atonik</td>
-                                <td class="p-3"><span class="bg-orange-100 text-orange-800 text-xs px-2 py-0.5 rounded font-bold">Phân Bón</span></td>
-                                <td class="p-3">100 ml</td>
-                                <td class="p-3 font-bold text-emerald-600">45.000đ</td>
-                                <td class="p-3 text-right"><button class="text-blue-600 text-xs font-bold">Sửa</button></td>
-                            </tr>
-                            <tr>
-                                <td class="p-3 font-semibold">Phân Trùn Quế Cao Cấp</td>
-                                <td class="p-3"><span class="bg-orange-100 text-orange-800 text-xs px-2 py-0.5 rounded font-bold">Phân Bón</span></td>
-                                <td class="p-3">2 kg</td>
-                                <td class="p-3 font-bold text-emerald-600">60.000đ</td>
-                                <td class="p-3 text-right"><button class="text-blue-600 text-xs font-bold">Sửa</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- TAB 4: VƯỜN (QUẢN LÝ VƯỜN & PHÂN CÔNG KTV) -->
-            <div id="tab-vuon" class="tab-content hidden space-y-6">
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-                    <h3 class="font-bold text-slate-800 mb-2"><i class="fa-solid fa-lock text-amber-500 mr-2"></i>Quản Lý Vườn, Gắn KTV & Khóa Dữ Liệu</h3>
-                    <p class="text-xs text-slate-500 mb-4">Khi vườn được gắn Kỹ Thuật Viên, dữ liệu nhật ký trên App Nông Dân sẽ tự động khóa.</p>
-                    <table class="w-full text-left text-sm border-collapse">
-                        <thead>
-                            <tr class="bg-slate-100 text-slate-600 text-xs uppercase border-b">
-                                <th class="p-3">Tên Vườn</th>
-                                <th class="p-3">Nông Dân (Chủ Vườn)</th>
-                                <th class="p-3">KTV Phụ Trách</th>
-                                <th class="p-3">Trạng Thái Khóa</th>
-                                <th class="p-3 text-right">Thao Tác</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y">
-                            <tr>
-                                <td class="p-3 font-bold">Vườn Sầu Riêng - Lô A1 <span class="block font-normal text-xs text-slate-400">1.5 Hécta • 120 Cây Thái</span></td>
-                                <td class="p-3">Anh Sáu (Nông Dân)</td>
-                                <td class="p-3"><select class="border p-1 rounded text-xs"><option>KTV Minh (Kỹ Thuật)</option></select></td>
-                                <td class="p-3"><span class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-0.5 rounded">🔒 ĐÃ KHÓA</span></td>
-                                <td class="p-3 text-right"><button class="px-2 py-1 bg-slate-100 text-xs border rounded font-semibold">Mở Khóa</button></td>
-                            </tr>
-                            <tr>
-                                <td class="p-3 font-bold">Vườn Cà Phê - Đồi 2 <span class="block font-normal text-xs text-slate-400">2.0 Hécta • 2000 Gốc Robusta</span></td>
-                                <td class="p-3">Anh Sáu (Nông Dân)</td>
-                                <td class="p-3"><select class="border p-1 rounded text-xs"><option>-- Chưa gắn KTV --</option></select></td>
-                                <td class="p-3"><span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-0.5 rounded">🔓 Mở khóa</span></td>
-                                <td class="p-3 text-right"><button class="px-2 py-1 bg-amber-500 text-white text-xs rounded font-semibold">Khóa Dữ Liệu</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- TAB 5: TÀI CHÍNH (ĐẦU TƯ & CHI PHÍ VƯỜN) -->
-            <div id="tab-taichinh" class="tab-content hidden space-y-6">
-                <div class="bg-gradient-to-r from-blue-700 to-sky-600 text-white p-6 rounded-2xl shadow-lg">
-                    <h3 class="text-lime-300 font-extrabold text-lg uppercase tracking-wide">ỨNG PHÂN THUỐC - ĐẦU TƯ TOÀN HỆ THỐNG</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-center">
-                        <div class="bg-white/10 p-3 rounded-xl backdrop-blur">
-                            <p class="text-2xl font-black text-lime-300">457 Vườn</p>
-                            <p class="text-xs text-slate-200">Đang ứng vật tư</p>
-                        </div>
-                        <div class="bg-white/10 p-3 rounded-xl backdrop-blur">
-                            <p class="text-2xl font-black text-white">267 Người</p>
-                            <p class="text-xs text-slate-200">Nhà đầu tư</p>
-                        </div>
-                        <div class="bg-white/10 p-3 rounded-xl backdrop-blur">
-                            <p class="text-2xl font-black text-white">2,75 Tỷ</p>
-                            <p class="text-xs text-slate-200">Tổng vốn đầu tư</p>
-                        </div>
-                        <div class="bg-white/10 p-3 rounded-xl backdrop-blur">
-                            <p class="text-2xl font-black text-lime-300">365 Triệu</p>
-                            <p class="text-xs text-slate-200">Tổng lợi nhuận</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-                    <h3 class="font-bold text-slate-800 mb-3">Lịch Sử Nhật Ký Tài Chính Tương Tác</h3>
-                    <div class="space-y-2">
-                        <div class="p-3 border rounded-lg flex justify-between items-center bg-slate-50">
-                            <div>
-                                <span class="text-xs font-bold text-blue-600">12/08</span>
-                                <p class="font-semibold text-sm">Phun nấm lá đợt 1 phòng trừ rầy và nấm tắc kè trên diện rộng</p>
-                            </div>
-                            <span class="font-bold text-rose-600 text-sm">420.000đ - 2 Phuy</span>
-                        </div>
-                        <div class="p-3 border rounded-lg flex justify-between items-center bg-slate-50">
-                            <div>
-                                <span class="text-xs font-bold text-blue-600">10/08</span>
-                                <p class="font-semibold text-sm">Bón phân hữu cơ nở đợt 3 giúp kích rễ và phục hồi cây</p>
-                            </div>
-                            <span class="font-bold text-rose-600 text-sm">650.000đ - 50 KG</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 6: QUẢN LÝ (USER & PHÂN QUYỀN) -->
-            <div id="tab-quanly" class="tab-content hidden space-y-6">
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-                    <div class="flex justify-between items-center mb-4">
+                <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
+                    <div class="flex justify-between items-center border-b pb-4">
                         <div>
-                            <h3 class="font-bold text-slate-800">Quản Lý Tài Khoản User & Phân Quyền App</h3>
-                            <p class="text-xs text-slate-500">Reset mật khẩu và phân vai trò Nông Dân / Kỹ Thuật Viên</p>
+                            <h3 class="font-black text-slate-800 text-lg">Quản Lý Sản Phẩm Mua Sắm Trên App</h3>
+                            <p class="text-xs text-slate-500 font-bold">Thêm hoặc xóa phân bón, thuốc bảo vệ thực vật cho nông dân đặt hàng</p>
                         </div>
-                        <button class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold shadow hover:bg-emerald-700"><i class="fa-solid fa-plus mr-1"></i>Tạo User Mới</button>
+                        <button onclick="addNewProduct()" class="px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-black shadow-lg hover:bg-emerald-700 transition flex items-center space-x-1">
+                            <i class="fa-solid fa-plus mr-1"></i>Thêm Sản Phẩm Mới
+                        </button>
                     </div>
-                    <table class="w-full text-left text-sm border-collapse">
-                        <thead>
-                            <tr class="bg-slate-100 text-slate-600 text-xs uppercase border-b">
-                                <th class="p-3">Họ & Tên User</th>
-                                <th class="p-3">Số Điện Thoại</th>
-                                <th class="p-3">Vai Trò (Role App)</th>
-                                <th class="p-3">Trạng Thái</th>
-                                <th class="p-3 text-right">Thao Tác</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y">
-                            <tr>
-                                <td class="p-3 font-semibold">Anh Sáu (Nông Dân)</td>
-                                <td class="p-3 text-slate-600">0901234567</td>
-                                <td class="p-3"><span class="bg-sky-100 text-sky-800 text-xs px-2 py-0.5 rounded font-bold">Nông Dân</span></td>
-                                <td class="p-3 text-emerald-600 font-bold text-xs">● Hoạt động</td>
-                                <td class="p-3 text-right"><button class="px-2 py-1 bg-slate-100 text-xs border rounded font-semibold text-amber-600">Đổi Mật Khẩu</button></td>
-                            </tr>
-                            <tr>
-                                <td class="p-3 font-semibold">Chú Ba (Nông Dân)</td>
-                                <td class="p-3 text-slate-600">0908765432</td>
-                                <td class="p-3"><span class="bg-sky-100 text-sky-800 text-xs px-2 py-0.5 rounded font-bold">Nông Dân</span></td>
-                                <td class="p-3 text-emerald-600 font-bold text-xs">● Hoạt động</td>
-                                <td class="p-3 text-right"><button class="px-2 py-1 bg-slate-100 text-xs border rounded font-semibold text-amber-600">Đổi Mật Khẩu</button></td>
-                            </tr>
-                            <tr>
-                                <td class="p-3 font-semibold">KTV Minh (Kỹ Thuật)</td>
-                                <td class="p-3 text-slate-600">0912345678</td>
-                                <td class="p-3"><span class="bg-purple-100 text-purple-800 text-xs px-2 py-0.5 rounded font-bold">Kỹ Thuật Viên</span></td>
-                                <td class="p-3 text-emerald-600 font-bold text-xs">● Hoạt động</td>
-                                <td class="p-3 text-right"><button class="px-2 py-1 bg-slate-100 text-xs border rounded font-semibold text-amber-600">Đổi Mật Khẩu</button></td>
-                            </tr>
-                            <tr>
-                                <td class="p-3 font-semibold">KTV Hoàng (Kỹ Thuật)</td>
-                                <td class="p-3 text-slate-600">0919998888</td>
-                                <td class="p-3"><span class="bg-purple-100 text-purple-800 text-xs px-2 py-0.5 rounded font-bold">Kỹ Thuật Viên</span></td>
-                                <td class="p-3 text-emerald-600 font-bold text-xs">● Hoạt động</td>
-                                <td class="p-3 text-right"><button class="px-2 py-1 bg-slate-100 text-xs border rounded font-semibold text-amber-600">Đổi Mật Khẩu</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-600 text-xs font-black uppercase border-b">
+                                    <th class="p-3.5">Tên Sản Phẩm</th>
+                                    <th class="p-3.5">Danh Mục</th>
+                                    <th class="p-3.5">Huy Hiệu Tag</th>
+                                    <th class="p-3.5">Quy Cách</th>
+                                    <th class="p-3.5">Đơn Giá</th>
+                                    <th class="p-3.5 text-right">Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="product-table-body" class="divide-y text-slate-700 font-semibold">
+                                <!-- Dữ liệu sản phẩm sẽ được tự động nạp từ Supabase -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: QUẢN LÝ VƯỜN -->
+            <div id="tab-vuon" class="tab-content hidden space-y-6">
+                <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
+                    <div class="flex justify-between items-center border-b pb-4">
+                        <div>
+                            <h3 class="font-black text-slate-800 text-lg">Danh Sách Vườn & Phân Công Kỹ Thuật Viên</h3>
+                            <p class="text-xs text-slate-500 font-bold">Khóa dữ liệu vườn khi KTV phụ trách tiếp nhận kiểm tra</p>
+                        </div>
+                        <button onclick="addNewGarden()" class="px-4 py-2.5 bg-lime-600 text-white rounded-xl text-xs font-black shadow-lg hover:bg-lime-700 transition flex items-center space-x-1">
+                            <i class="fa-solid fa-plus mr-1"></i>Thêm Vườn Mới
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-600 text-xs font-black uppercase border-b">
+                                    <th class="p-3.5">Tên Vườn</th>
+                                    <th class="p-3.5">Diện Tích / Số Cây</th>
+                                    <th class="p-3.5">Chủ Vườn</th>
+                                    <th class="p-3.5">KTV Phụ Trách</th>
+                                    <th class="p-3.5">Trạng Thái Khóa</th>
+                                    <th class="p-3.5 text-right">Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="garden-table-body" class="divide-y text-slate-700 font-semibold">
+                                <!-- Dữ liệu vườn được tự động nạp từ Supabase -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: NHẬT KÝ VƯỜN -->
+            <div id="tab-nhatky" class="tab-content hidden space-y-6">
+                <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
+                    <div class="border-b pb-3">
+                        <h3 class="font-black text-slate-800 text-lg">Nhật Ký Hoạt Động Vườn</h3>
+                        <p class="text-xs text-slate-500 font-bold">Hiển thị lịch sử công việc tưới nước, bón phân, phun thuốc ghi nhận từ App Mobile</p>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-600 text-xs font-black uppercase border-b">
+                                    <th class="p-3.5">Ngày</th>
+                                    <th class="p-3.5">Tên Vườn</th>
+                                    <th class="p-3.5">Hoạt Động / Tiêu Đề</th>
+                                    <th class="p-3.5">Loại</th>
+                                    <th class="p-3.5">Chi Phí</th>
+                                </tr>
+                            </thead>
+                            <tbody id="diary-table-body" class="divide-y text-slate-700 font-semibold">
+                                <!-- Dữ liệu nhật ký nạp từ Supabase -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
         </main>
     </div>
 
-    <!-- SCRIPT CHUYỂN TAB TỰ ĐỘNG -->
+    <!-- SUPABASE REALTIME SCRIPT -->
     <script>
+        const SUPABASE_URL = 'https://vfrrpdpuswbkbtevliiu.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_jyvoR75vgyfwuzO1TRB7uA_voyEOtXP';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Chuyển Tab
         function switchTab(tabId) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.add('hidden');
-            });
-            // Show selected tab
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
             document.getElementById(tabId).classList.remove('hidden');
 
-            // Reset all menu buttons styling
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.className = 'nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition';
             });
-            // Highlight active menu button
             const activeBtn = document.getElementById('btn-' + tabId.replace('tab-', ''));
             if(activeBtn) {
                 activeBtn.className = 'nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg bg-blue-600 text-white shadow font-bold';
             }
         }
+
+        // Tải & Cập nhật Giá thị trường
+        async function fetchMarketPrices() {
+            const { data } = await supabase.from('market_prices').select('*').order('id', { ascending: false }).limit(1);
+            if (data && data.length > 0) {
+                const item = data[0];
+                document.getElementById('price-caphe').value = item.caphe || '118.500đ';
+                document.getElementById('price-hotieu').value = item.hotieu || '145.000đ';
+                document.getElementById('price-vang').value = item.vang || '8.450.000đ';
+                document.getElementById('stat-caphe-price').innerText = item.caphe || '118.500đ';
+            }
+        }
+
+        async function updateMarketPrices() {
+            const caphe = document.getElementById('price-caphe').value;
+            const hotieu = document.getElementById('price-hotieu').value;
+            const vang = document.getElementById('price-vang').value;
+
+            const { error } = await supabase.from('market_prices').insert([{ caphe, hotieu, vang }]);
+            if (error) alert('Lỗi: ' + error.message);
+            else alert('✅ Đã cập nhật giá mới thành công lên App Mobile!');
+        }
+
+        // Tải danh sách Sản phẩm Mua sắm
+        async function fetchProducts() {
+            const { data: products } = await supabase.from('products').select('*').order('id', { ascending: true });
+            if (!products) return;
+
+            document.getElementById('stat-products-count').innerText = products.length;
+            const tbody = document.getElementById('product-table-body');
+            tbody.innerHTML = products.map(p => `
+                <tr>
+                    <td class="p-3.5 font-bold">${p.name}</td>
+                    <td class="p-3.5"><span class="bg-orange-100 text-orange-800 text-xs px-2.5 py-1 rounded-md font-bold">${p.category || 'Vật Tư'}</span></td>
+                    <td class="p-3.5"><span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-md font-bold">${p.tag || 'Chính Hãng'}</span></td>
+                    <td class="p-3.5">${p.dosage || 'Theo bao bì'}</td>
+                    <td class="p-3.5 font-black text-emerald-600">${Number(p.price).toLocaleString('vi-VN')}đ</td>
+                    <td class="p-3.5 text-right">
+                        <button onclick="deleteProduct(${p.id})" class="text-red-500 hover:text-red-700 text-xs font-bold"><i class="fa-solid fa-trash mr-1"></i>Xóa</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function addNewProduct() {
+            const name = prompt("Nhập tên sản phẩm mới:");
+            if (!name) return;
+            const category = prompt("Danh mục (Ví dụ: Phân Bón, Thuốc BVTV):", "Phân Bón");
+            const tag = prompt("Thẻ Tag (Ví dụ: Khuyến Mãi, Hàng Mới, Uy Tín):", "Khuyến Mãi");
+            const price = prompt("Đơn giá (Số):", "85000");
+
+            await supabase.from('products').insert([{ name, category, tag, price: parseInt(price), dosage: '1 kg' }]);
+            fetchProducts();
+        }
+
+        async function deleteProduct(id) {
+            if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
+                await supabase.from('products').delete().eq('id', id);
+                fetchProducts();
+            }
+        }
+
+        // Tải danh sách Vườn
+        async function fetchGardens() {
+            const { data: gardens } = await supabase.from('gardens').select('*').order('id', { ascending: true });
+            if (!gardens) return;
+
+            document.getElementById('stat-gardens-count').innerText = gardens.length;
+            const tbody = document.getElementById('garden-table-body');
+            tbody.innerHTML = gardens.map(g => `
+                <tr>
+                    <td class="p-3.5 font-bold text-slate-800">${g.name} <span class="block text-xs font-normal text-slate-400">${g.crop}</span></td>
+                    <td class="p-3.5">${g.area} • ${g.tree_count} Cây</td>
+                    <td class="p-3.5 font-semibold">${g.farmer_name || 'Anh Sáu'}</td>
+                    <td class="p-3.5"><span class="text-xs bg-purple-100 text-purple-800 font-bold px-2 py-0.5 rounded">${g.ktv_assigned || 'Chưa gắn'}</span></td>
+                    <td class="p-3.5">
+                        ${g.is_locked 
+                            ? '<span class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-md">🔒 ĐÃ KHÓA</span>' 
+                            : '<span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-md">🔓 MỞ KHÓA</span>'}
+                    </td>
+                    <td class="p-3.5 text-right">
+                        <button onclick="toggleGardenLock(${g.id}, ${!g.is_locked})" class="px-3 py-1 text-xs font-bold border rounded-lg hover:bg-slate-100">
+                            ${g.is_locked ? 'Mở Khóa' : 'Khóa Dữ Liệu'}
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function toggleGardenLock(id, status) {
+            await supabase.from('gardens').update({ is_locked: status }).eq('id', id);
+            fetchGardens();
+        }
+
+        async function addNewGarden() {
+            const name = prompt("Nhập tên vườn:");
+            if (!name) return;
+            const crop = prompt("Loại cây trồng (SẦU RIÊNG, CÀ PHÊ...):", "SẦU RIÊNG");
+            await supabase.from('gardens').insert([{ name, crop, area: '1.0 Hécta', tree_count: 150 }]);
+            fetchGardens();
+        }
+
+        // Tải danh sách Nhật ký Vườn
+        async function fetchDiaries() {
+            const { data: diaries } = await supabase.from('diaries').select('*').order('id', { ascending: false });
+            if (!diaries) return;
+
+            document.getElementById('stat-diaries-count').innerText = diaries.length;
+            const tbody = document.getElementById('diary-table-body');
+            tbody.innerHTML = diaries.map(d => `
+                <tr>
+                    <td class="p-3.5 text-xs font-bold text-blue-600">${d.activity_date || 'Hôm nay'}</td>
+                    <td class="p-3.5 font-bold">${d.garden_name}</td>
+                    <td class="p-3.5 font-semibold">${d.title}</td>
+                    <td class="p-3.5"><span class="bg-sky-100 text-sky-800 text-xs px-2 py-0.5 rounded font-bold">${d.category || 'Tưới nước'}</span></td>
+                    <td class="p-3.5 font-bold text-rose-600">${Number(d.cost || 0).toLocaleString('vi-VN')}đ</td>
+                </tr>
+            `).join('');
+        }
+
+        // Khởi tạo & Đăng ký Realtime
+        function initApp() {
+            fetchMarketPrices();
+            fetchProducts();
+            fetchGardens();
+            fetchDiaries();
+
+            // Đăng ký Supabase Realtime Channels
+            supabase.channel('public-tables')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, fetchProducts)
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'gardens' }, fetchGardens)
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'diaries' }, fetchDiaries)
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'market_prices' }, fetchMarketPrices)
+                .subscribe();
+        }
+
+        window.onload = initApp;
     </script>
 </body>
 </html>
