@@ -34,8 +34,8 @@
                     <span>Tổng Quan</span>
                 </button>
                 <button id="btn-kienthuc" onclick="switchTab('tab-kienthuc')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition cursor-pointer">
-                    <i class="fa-solid fa-coins w-5 text-amber-400"></i>
-                    <span>Giá Cả Thị Trường</span>
+                    <i class="fa-solid fa-book-open w-5 text-amber-400"></i>
+                    <span>Kiến Thức</span>
                 </button>
                 <button id="btn-muasam" onclick="switchTab('tab-muasam')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition cursor-pointer">
                     <i class="fa-solid fa-bag-shopping w-5 text-emerald-400"></i>
@@ -94,7 +94,7 @@
                         <div>
                             <p class="text-xs font-bold text-slate-400 uppercase">VƯỜN ĐANG QUẢN LÝ</p>
                             <h3 id="stat-gardens-count" class="text-3xl font-black text-lime-600 mt-1">2</h3>
-                            <p class="text-xs text-slate-500 font-bold mt-1">Đã gắn KTV phụ trách</p>
+                            <p class="text-xs text-slate-500 font-bold mt-1">Đã gán KTV phụ trách</p>
                         </div>
                         <div class="p-4 bg-lime-50 text-lime-600 rounded-2xl"><i class="fa-solid fa-tree text-2xl"></i></div>
                     </div>
@@ -123,22 +123,23 @@
                         <i class="fa-solid fa-bolt mr-2"></i>Trạng Thái Đồng Bộ Hệ Thống App Mobile
                     </h3>
                     <p class="text-sm text-blue-100 mt-2 leading-relaxed">
-                        Mọi thao tác cập nhật <strong>Giá nông sản</strong>, thêm <strong>Sản phẩm phân bón/thuốc BVTV</strong>, hoặc <strong>Khóa nhật ký vườn</strong> tại Dashboard này sẽ tự động đẩy ngay lập tức về điện thoại của Nông dân qua <strong>Supabase Realtime WebSocket</strong> mà không cần tải lại trang.
+                        Mọi thao tác cập nhật <strong>Giá nông sản & Bài viết kiến thức</strong>, <strong>Gán Kỹ Thuật Viên chăm sóc vườn</strong>, hoặc <strong>Xem chi tiết Nhật ký vườn theo từng User</strong> tại Dashboard này sẽ tự động kết nối qua <strong>Supabase Realtime Database</strong>.
                     </p>
                 </div>
             </div>
 
-            <!-- TAB 2: GIÁ CẢ THỊ TRƯỜNG -->
+            <!-- TAB 2: KIẾN THỨC (GIÁ CẢ + QUẢN LÝ BÀI VIẾT) -->
             <div id="tab-kienthuc" class="tab-content hidden space-y-6">
+                <!-- Phần 1: Giá thị trường -->
                 <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
                     <div class="flex justify-between items-center border-b pb-3">
                         <div>
-                            <h3 class="font-black text-slate-800 text-lg">Cập Nhật Giá Nông Sản Thị Trường</h3>
+                            <h3 class="font-black text-slate-800 text-lg">1. Cập Nhật Giá Nông Sản Thị Trường</h3>
                             <p class="text-xs text-slate-500 font-bold">Thay đổi giá ở đây sẽ hiển thị ngay tại Trang chủ App Mobile</p>
                         </div>
                         <button id="btn-update-prices" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-black shadow-lg hover:bg-blue-700 transition flex items-center space-x-2 cursor-pointer">
                             <i class="fa-solid fa-floppy-disk"></i>
-                            <span>Cập Nhật Ngay</span>
+                            <span>Cập Nhật Giá</span>
                         </button>
                     </div>
 
@@ -154,6 +155,40 @@
                         <div class="p-4 border rounded-2xl bg-slate-50 space-y-1">
                             <label class="text-xs font-black text-slate-500 uppercase">VÀNG SJC (ĐỒNG/LƯỢNG)</label>
                             <input id="price-vang" type="text" value="8.450.000đ" class="w-full border-2 border-slate-200 px-3 py-2 rounded-xl font-black text-blue-600 bg-white focus:border-blue-500 outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phần 2: Quản lý Bài viết Kỹ Thuật Nông Nghiệp -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <div>
+                            <h3 class="font-black text-slate-800 text-lg">2. Quản Lý Bài Viết Kỹ Thuật Nông Nghiệp (Tab Kiến Thức App)</h3>
+                            <p class="text-xs text-slate-500 font-bold">Thêm bài viết hướng dẫn phòng trừ sâu bệnh, kỹ thuật chăm sóc cây trồng</p>
+                        </div>
+                        <button id="btn-add-article" class="px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-black shadow-lg hover:bg-emerald-700 transition flex items-center space-x-1 cursor-pointer">
+                            <i class="fa-solid fa-plus mr-1"></i>Thêm Bài Viết Mới
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="articles-container">
+                        <div class="p-4 border rounded-2xl bg-slate-50 space-y-2">
+                            <span class="bg-orange-100 text-orange-800 text-xs px-2.5 py-1 rounded-md font-bold">Sầu Riêng</span>
+                            <h4 class="font-bold text-slate-800 text-sm">Nông dân phấn khởi trúng mùa sầu riêng chuẩn VietGAP</h4>
+                            <p class="text-xs text-slate-500 line-clamp-2">Hướng dẫn quy trình chăm sóc trái sầu riêng giai đoạn xả nhụy và nuôi quả non...</p>
+                            <div class="pt-2 flex justify-between items-center border-t text-xs">
+                                <span class="text-slate-400">28/09/2026</span>
+                                <button class="text-red-500 font-bold cursor-pointer">Xóa</button>
+                            </div>
+                        </div>
+                        <div class="p-4 border rounded-2xl bg-slate-50 space-y-2">
+                            <span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-md font-bold">Cà Phê</span>
+                            <h4 class="font-bold text-slate-800 text-sm">Hệ thống tưới tự động giúp thảnh thơi trúng mùa cà phê</h4>
+                            <p class="text-xs text-slate-500 line-clamp-2">Ứng dụng công nghệ tưới tiết kiệm nước kết hợp bón phân qua đường ống...</p>
+                            <div class="pt-2 flex justify-between items-center border-t text-xs">
+                                <span class="text-slate-400">28/09/2026</span>
+                                <button class="text-red-500 font-bold cursor-pointer">Xóa</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -192,13 +227,13 @@
                 </div>
             </div>
 
-            <!-- TAB 4: QUẢN LÝ VƯỜN -->
+            <!-- TAB 4: QUẢN LÝ VƯỜN & GÁN KỸ THUẬT VIÊN -->
             <div id="tab-vuon" class="tab-content hidden space-y-6">
                 <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
                     <div class="flex justify-between items-center border-b pb-4">
                         <div>
-                            <h3 class="font-black text-slate-800 text-lg">Danh Sách Vườn & Phân Công Kỹ Thuật Viên</h3>
-                            <p class="text-xs text-slate-500 font-bold">Khóa dữ liệu vườn khi KTV phụ trách tiếp nhận kiểm tra</p>
+                            <h3 class="font-black text-slate-800 text-lg">Quản Lý Vườn & Gán Kỹ Thuật Viên Chăm Sóc</h3>
+                            <p class="text-xs text-slate-500 font-bold">Chọn Kỹ thuật viên phụ trách vườn của Nông dân. Khi gán xong, KTV sẽ xem được toàn bộ nhật ký vườn này trên App</p>
                         </div>
                         <button id="btn-add-garden" class="px-4 py-2.5 bg-lime-600 text-white rounded-xl text-xs font-black shadow-lg hover:bg-lime-700 transition flex items-center space-x-1 cursor-pointer">
                             <i class="fa-solid fa-plus mr-1"></i>Thêm Vườn Mới
@@ -209,45 +244,96 @@
                         <table class="w-full text-left text-sm border-collapse">
                             <thead>
                                 <tr class="bg-slate-100 text-slate-600 text-xs font-black uppercase border-b">
-                                    <th class="p-3.5">Tên Vườn</th>
+                                    <th class="p-3.5">Tên Vườn (User Tạo)</th>
                                     <th class="p-3.5">Diện Tích / Số Cây</th>
-                                    <th class="p-3.5">Chủ Vườn</th>
-                                    <th class="p-3.5">KTV Phụ Trách</th>
+                                    <th class="p-3.5">Chủ Vườn (Nông Dân)</th>
+                                    <th class="p-3.5">Gán KTV Phụ Trách</th>
                                     <th class="p-3.5">Trạng Thái Khóa</th>
                                     <th class="p-3.5 text-right">Thao Tác</th>
                                 </tr>
                             </thead>
                             <tbody id="garden-table-body" class="divide-y text-slate-700 font-semibold">
-                                <!-- Dữ liệu vườn -->
+                                <!-- Dữ liệu vườn & Dropdown chọn KTV -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 5: NHẬT KÝ VƯỜN -->
+            <!-- TAB 5: NHẬT KÝ VƯỜN THEO USER -->
             <div id="tab-nhatky" class="tab-content hidden space-y-6">
                 <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
                     <div class="border-b pb-3">
-                        <h3 class="font-black text-slate-800 text-lg">Nhật Ký Hoạt Động Vườn</h3>
-                        <p class="text-xs text-slate-500 font-bold">Hiển thị lịch sử công việc tưới nước, bón phân, phun thuốc ghi nhận từ App Mobile</p>
+                        <h3 class="font-black text-slate-800 text-lg">Danh Sách User Nông Dân & Nhật Ký Từng Vườn</h3>
+                        <p class="text-xs text-slate-500 font-bold">Xem thông tin cá nhân (SĐT, Email, Địa chỉ) và bấm chọn xem nhật ký theo từng Vườn</p>
                     </div>
 
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm border-collapse">
-                            <thead>
-                                <tr class="bg-slate-100 text-slate-600 text-xs font-black uppercase border-b">
-                                    <th class="p-3.5">Ngày</th>
-                                    <th class="p-3.5">Tên Vườn</th>
-                                    <th class="p-3.5">Hoạt Động / Tiêu Đề</th>
-                                    <th class="p-3.5">Loại</th>
-                                    <th class="p-3.5">Chi Phí</th>
-                                </tr>
-                            </thead>
-                            <tbody id="diary-table-body" class="divide-y text-slate-700 font-semibold">
-                                <!-- Dữ liệu nhật ký -->
-                            </tbody>
-                        </table>
+                    <!-- Danh sách User & Các Vườn của User -->
+                    <div id="users-gardens-accordion" class="space-y-4">
+                        <div class="border rounded-2xl p-5 bg-slate-50 space-y-3">
+                            <div class="flex justify-between items-center">
+                                <div class="space-y-1">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="font-black text-slate-800 text-base">Anh Sáu (Nông Dân)</span>
+                                        <span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-0.5 rounded-full font-bold">VietGAP Active</span>
+                                    </div>
+                                    <p class="text-xs text-slate-500">📞 SĐT: 0901234567 • ✉️ Email: nongdan.sau@gmail.com • 📍 Địa chỉ: Đắk Lắk</p>
+                                </div>
+                            </div>
+
+                            <!-- Danh sách các Vườn của User này -->
+                            <div class="pt-2 border-t space-y-2">
+                                <span class="text-xs font-black text-slate-400 uppercase">DANH SÁCH VƯỜN Bấm để xem nhật ký:</span>
+                                <div class="flex flex-wrap gap-2">
+                                    <button onclick="viewGardenDiaries('Vườn Sầu Riêng - Lô A1')" class="px-3.5 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold shadow hover:bg-emerald-700 transition flex items-center space-x-1 cursor-pointer">
+                                        <i class="fa-solid fa-tree"></i>
+                                        <span>Vườn Sầu Riêng - Lô A1</span>
+                                    </button>
+                                    <button onclick="viewGardenDiaries('Vườn Cà Phê - Đồi 2')" class="px-3.5 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow hover:bg-blue-700 transition flex items-center space-x-1 cursor-pointer">
+                                        <i class="fa-solid fa-tree"></i>
+                                        <span>Vườn Cà Phê - Đồi 2</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Khung hiển thị Chi Tiết Nhật Ký của Vườn được chọn -->
+                    <div id="garden-diary-detail-box" class="p-5 border-2 border-purple-200 bg-purple-50/50 rounded-2xl space-y-3">
+                        <div class="flex justify-between items-center border-b border-purple-200 pb-2">
+                            <h4 id="selected-garden-title" class="font-black text-purple-900 text-base">Chi Tiết Nhật Ký: Vườn Sầu Riêng - Lô A1</h4>
+                            <span class="text-xs bg-purple-200 text-purple-800 px-2.5 py-1 rounded-md font-bold">Live Logs & Hình Ảnh</span>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm border-collapse">
+                                <thead>
+                                    <tr class="bg-purple-100 text-purple-900 text-xs font-black uppercase border-b border-purple-200">
+                                        <th class="p-3">Ngày</th>
+                                        <th class="p-3">Hoạt Động / Công Việc</th>
+                                        <th class="p-3">Phân Loại</th>
+                                        <th class="p-3">Ghi Chú</th>
+                                        <th class="p-3">Chi Phí</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="garden-diary-table-body" class="divide-y divide-purple-100 text-slate-700 font-semibold">
+                                    <tr>
+                                        <td class="p-3 text-xs font-bold text-blue-600">28/09/2026</td>
+                                        <td class="p-3 font-bold">Phun nấm lá đợt 1 phòng trừ rầy</td>
+                                        <td class="p-3"><span class="bg-sky-100 text-sky-800 text-xs px-2 py-0.5 rounded font-bold">Phun thuốc</span></td>
+                                        <td class="p-3 text-xs text-slate-500">Phun thuốc sinh học buổi sáng, thời tiết râm mát</td>
+                                        <td class="p-3 font-bold text-rose-600">420.000đ</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-3 text-xs font-bold text-blue-600">25/09/2026</td>
+                                        <td class="p-3 font-bold">Bón phân hữu cơ nở đợt 3</td>
+                                        <td class="p-3"><span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-0.5 rounded font-bold">Bón phân</span></td>
+                                        <td class="p-3 text-xs text-slate-500">Kích rễ và phục hồi cây sau thu hoạch</td>
+                                        <td class="p-3 font-bold text-rose-600">650.000đ</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -255,11 +341,9 @@
         </main>
     </div>
 
-    <!-- SCRIPT CHÍNH VỚI EVENT LISTENERS THẦN TỐC -->
+    <!-- SCRIPT CHÍNH VỚI DỮ LIỆU ĐỒNG BỘ ĐẦY ĐỦ -->
     <script>
-        // 1. Hàm Chuyển Tab Độc Lập hoàn toàn
         function switchTab(tabId) {
-            console.log("Switching to tab:", tabId);
             const contents = document.querySelectorAll('.tab-content');
             contents.forEach(el => el.classList.add('hidden'));
 
@@ -280,7 +364,6 @@
             }
         }
 
-        // 2. Supabase SDK Client
         const SUPABASE_URL = 'https://vfrrpdpuswbkbtevliiu.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_jyvoR75vgyfwuzO1TRB7uA_voyEOtXP';
         let supabaseClient = null;
@@ -288,6 +371,9 @@
         if (window.supabase && typeof window.supabase.createClient === 'function') {
             supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         }
+
+        // Danh sách Kỹ thuật viên mẫu để gán vườn
+        const KTV_LIST = ['KTV Minh (Kỹ Thuật)', 'KTV Tuấn (Đắk Lắk)', 'KTV Hùng (Gia Lai)'];
 
         // Tải dữ liệu Giá
         async function fetchMarketPrices() {
@@ -301,7 +387,7 @@
                     if (document.getElementById('price-vang')) document.getElementById('price-vang').value = item.vang || '8.450.000đ';
                     if (document.getElementById('stat-caphe-price')) document.getElementById('stat-caphe-price').innerText = item.caphe || '118.500đ';
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) {}
         }
 
         // Tải danh sách Sản phẩm
@@ -327,10 +413,10 @@
                         </tr>
                     `).join('');
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) {}
         }
 
-        // Tải danh sách Vườn
+        // Tải danh sách Vườn & Gán KTV
         async function fetchGardens() {
             if (!supabaseClient) return;
             try {
@@ -344,8 +430,13 @@
                         <tr>
                             <td class="p-3.5 font-bold text-slate-800">${g.name} <span class="block text-xs font-normal text-slate-400">${g.crop}</span></td>
                             <td class="p-3.5">${g.area} • ${g.tree_count} Cây</td>
-                            <td class="p-3.5 font-semibold">${g.farmer_name || 'Anh Sáu'}</td>
-                            <td class="p-3.5"><span class="text-xs bg-purple-100 text-purple-800 font-bold px-2 py-0.5 rounded">${g.ktv_assigned || 'Chưa gắn'}</span></td>
+                            <td class="p-3.5 font-semibold text-blue-600">${g.farmer_name || 'Anh Sáu (Nông Dân)'}</td>
+                            <td class="p-3.5">
+                                <select onchange="assignKTVToGarden(${g.id}, this.value)" class="border-2 border-purple-200 bg-purple-50 text-purple-900 text-xs font-bold p-1.5 rounded-xl outline-none cursor-pointer">
+                                    <option value="">-- Chưa Gắn KTV --</option>
+                                    ${KTV_LIST.map(ktv => `<option value="${ktv}" ${g.ktv_assigned === ktv ? 'selected' : ''}>${ktv}</option>`).join('')}
+                                </select>
+                            </td>
                             <td class="p-3.5">
                                 ${g.is_locked 
                                     ? '<span class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-md">🔒 ĐÃ KHÓA</span>' 
@@ -359,33 +450,52 @@
                         </tr>
                     `).join('');
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) {}
         }
 
-        // Tải danh sách Nhật ký
+        async function assignKTVToGarden(id, ktvName) {
+            if (!supabaseClient) return;
+            const { error } = await supabaseClient.from('gardens').update({ ktv_assigned: ktvName, is_locked: ktvName !== '' }).eq('id', id);
+            if (error) alert("Lỗi khi gán KTV: " + error.message);
+            else {
+                alert(`✅ Đã gán thành công KTV ${ktvName || 'chưa gán'} cho vườn này! KTV hiện có thể xem nhật ký vườn trên App.`);
+                fetchGardens();
+            }
+        }
+
         async function fetchDiaries() {
             if (!supabaseClient) return;
             try {
                 const { data: diaries } = await supabaseClient.from('diaries').select('*').order('id', { ascending: false });
                 if (!diaries) return;
-
                 if (document.getElementById('stat-diaries-count')) document.getElementById('stat-diaries-count').innerText = diaries.length;
-                const tbody = document.getElementById('diary-table-body');
-                if (tbody) {
+            } catch(e) {}
+        }
+
+        // Xem Nhật Ký Theo Vườn Của User
+        window.viewGardenDiaries = async function(gardenName) {
+            document.getElementById('selected-garden-title').innerText = `Chi Tiết Nhật Ký: ${gardenName}`;
+            if (!supabaseClient) return;
+
+            const { data: diaries } = await supabaseClient.from('diaries').select('*').eq('garden_name', gardenName).order('id', { ascending: false });
+            const tbody = document.getElementById('garden-diary-table-body');
+            if (tbody) {
+                if (!diaries || diaries.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-xs text-slate-400 font-bold">Chưa có nhật ký ghi nhận cho vườn này.</td></tr>`;
+                } else {
                     tbody.innerHTML = diaries.map(d => `
                         <tr>
-                            <td class="p-3.5 text-xs font-bold text-blue-600">${d.activity_date || 'Hôm nay'}</td>
-                            <td class="p-3.5 font-bold">${d.garden_name}</td>
-                            <td class="p-3.5 font-semibold">${d.title}</td>
-                            <td class="p-3.5"><span class="bg-sky-100 text-sky-800 text-xs px-2 py-0.5 rounded font-bold">${d.category || 'Tưới nước'}</span></td>
-                            <td class="p-3.5 font-bold text-rose-600">${Number(d.cost || 0).toLocaleString('vi-VN')}đ</td>
+                            <td class="p-3 text-xs font-bold text-blue-600">${d.activity_date || '28/09/2026'}</td>
+                            <td class="p-3 font-bold text-slate-800">${d.title}</td>
+                            <td class="p-3"><span class="bg-sky-100 text-sky-800 text-xs px-2 py-0.5 rounded font-bold">${d.category || 'Công việc'}</span></td>
+                            <td class="p-3 text-xs text-slate-500">${d.notes || 'Ghi nhận từ App'}</td>
+                            <td class="p-3 font-bold text-rose-600">${Number(d.cost || 0).toLocaleString('vi-VN')}đ</td>
                         </tr>
                     `).join('');
                 }
-            } catch(e) { console.error(e); }
-        }
+            }
+        };
 
-        // Các hàm thao tác nút bấm
         async function deleteProductItem(id) {
             if (!supabaseClient) return;
             if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
@@ -400,10 +510,7 @@
             fetchGardens();
         }
 
-        // Gắn Event Listeners sau khi trang load xong
         window.addEventListener('DOMContentLoaded', () => {
-            console.log("DOM loaded, initializing App...");
-            
             fetchMarketPrices();
             fetchProducts();
             fetchGardens();
@@ -420,7 +527,7 @@
 
                     const { error } = await supabaseClient.from('market_prices').insert([{ caphe, hotieu, vang }]);
                     if (error) alert('Lỗi: ' + error.message);
-                    else alert('✅ Đã cập nhật giá mới thành công lên App Mobile!');
+                    else alert('✅ Đã cập nhật giá mới thành công!');
                 });
             }
 
@@ -451,18 +558,6 @@
                     await supabaseClient.from('gardens').insert([{ name, crop, area: '1.0 Hécta', tree_count: 150 }]);
                     fetchGardens();
                 });
-            }
-
-            // Subscriptions Realtime
-            if (supabaseClient) {
-                try {
-                    supabaseClient.channel('public-changes')
-                        .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, fetchProducts)
-                        .on('postgres_changes', { event: '*', schema: 'public', table: 'gardens' }, fetchGardens)
-                        .on('postgres_changes', { event: '*', schema: 'public', table: 'diaries' }, fetchDiaries)
-                        .on('postgres_changes', { event: '*', schema: 'public', table: 'market_prices' }, fetchMarketPrices)
-                        .subscribe();
-                } catch(e) {}
             }
         });
     </script>
